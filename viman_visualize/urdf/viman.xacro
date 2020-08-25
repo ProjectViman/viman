@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<robot name="viman" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- Macro to define propeller links -->
+  <!-- Input parameters: propeller ID, pose of the joint, xyz of CoM -->
+  <xacro:macro name="propeller_link" params="id com xyz rpy">        
+        
+        <link name="propeller_${id}">
+			<inertial>
+			  <origin
+				xyz="${com}"
+				rpy="0 0 0" />
+			  <mass
+				value="0.0014789" />
+			  <inertia
+				ixx="1.0387E-06"
+				ixy="8.0084E-24"
+				ixz="6.4155E-08"
+				iyy="1.0638E-06"
+				iyz="-3.0356E-23"
+				izz="3.1098E-08" />
+			</inertial>
+			<visual>
+			  <origin
+				xyz="0 0 0"
+				rpy="0 0 0" />
+			  <geometry>
+				<mesh
+				  filename="package://viman_visualize/meshes/propeller.STL" />
+			  </geometry>
+			  <material
+				name="">
+				<color
+				  rgba="1 1 1 1" />
+			  </material>
+			</visual>
+			<collision>
+			  <origin
+				xyz="0 0 0"
+				rpy="0 0 0" />
+			  <geometry>
+				<mesh
+				  filename="package://viman_visualize/meshes/propeller.STL" />
+			  </geometry>
+			</collision>              
+        </link>
+        
+        <joint name="propeller_${id}_joint" type="continuous">
+            <parent link="base_link"/>
+            <child link="propeller_${id}"/>
+            <origin rpy="${rpy}" xyz="${xyz}"/>
+            <axis xyz="0 1 0" />
+        </joint>
+        
+        <gazebo reference="propeller_${id}">
+			<material>Gazebo/White</material>
+		</gazebo>
+                 
+  </xacro:macro>   
+	
+  <link name="base_link">
+    <inertial>
+      <origin
+        xyz="-2.0447E-05 0.019934 -2.776E-05"
+        rpy="0 0 0" />
+      <mass
+        value="0.2066" />
+      <inertia
+        ixx="3.294E-05"
+        ixy="-2.7157E-10"
+        ixz="-4.6663E-08"
+        iyy="7.1306E-05"
+        iyz="5.2755E-10"
+        izz="4.617E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://viman_visualize/meshes/base_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.77647 0.75686 0.73725 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://viman_visualize/meshes/base_link_collision.STL" />
+      </geometry>
+    </collision>
+  </link>
+  
+  <gazebo reference="base_link">
+	<material>Gazebo/Yellow</material>
+  </gazebo>
+  
+  <xacro:propeller_link id="1" com="0 0.0027273 -1.3878E-17" xyz="-0.085003 -0.084703 0.0305" rpy="1.5708 0 -1.9677"/>
+  <xacro:propeller_link id="2" com="0 0.0027273 2.0817E-17" xyz="0.084703 -0.085003 0.0305" rpy="1.5708 0 -0.60712"/>
+  <xacro:propeller_link id="3" com="-2.7756E-17 -0.00027271 0" xyz="0.085003 0.084703 0.0335" rpy="1.5708 0 1.1739"/>
+  <xacro:propeller_link id="4" com="2.7756E-17 -0.00027271 2.7756E-17" xyz="-0.084703 0.085003 0.0335" rpy="1.5708 0 2.5345"/>
+  
+  
+</robot>
+

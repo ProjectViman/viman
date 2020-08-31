@@ -46,7 +46,7 @@
 			</collision>              
         </link>
         
-        <joint name="propeller_${id}_joint" type="continuous">
+        <joint name="propeller_${id}_joint" type="fixed">
             <parent link="base_link"/>
             <child link="propeller_${id}"/>
             <origin rpy="${rpy}" xyz="${xyz}"/>
@@ -108,6 +108,34 @@
   <xacro:propeller_link id="3" com="-2.7756E-17 -0.00027271 0" xyz="0.085003 0.084703 0.0335" rpy="1.5708 0 1.1739"/>
   <xacro:propeller_link id="4" com="2.7756E-17 -0.00027271 2.7756E-17" xyz="-0.084703 0.085003 0.0335" rpy="1.5708 0 2.5345"/>
   
-  
+  <gazebo>
+    <plugin name='uav_viman' filename='libplugin_viman_ctrl.so'>
+        <bodyName>base_link</bodyName>
+        <imuTopic>/viman/imu</imuTopic>
+        <rollpitchProportionalGain>10.0</rollpitchProportionalGain>
+        <rollpitchDifferentialGain>5.0</rollpitchDifferentialGain>
+        <rollpitchLimit>0.5</rollpitchLimit>
+        <yawProportionalGain>2.0</yawProportionalGain>
+        <yawDifferentialGain>1.0</yawDifferentialGain>
+        <yawLimit>1.5</yawLimit>
+        <velocityXYProportionalGain>5.0</velocityXYProportionalGain>
+        <velocityXYDifferentialGain>2.3</velocityXYDifferentialGain>
+        <velocityXYLimit>2</velocityXYLimit>
+        <velocityZProportionalGain>5.0</velocityZProportionalGain>
+        <velocityZDifferentialGain>1.0</velocityZDifferentialGain>
+        <velocityZLimit>-1</velocityZLimit>
+        <positionXYProportionalGain>1.1</positionXYProportionalGain>
+        <positionXYDifferentialGain>0.0</positionXYDifferentialGain>
+        <positionXYIntegralGain>0.0</positionXYIntegralGain>
+        <positionXYLimit>5</positionXYLimit>
+        <positionZProportionalGain>1.0</positionZProportionalGain>
+        <positionZDifferentialGain>0.2</positionZDifferentialGain>
+        <positionZLimit>-1</positionZLimit>
+        <maxForce>30</maxForce>
+        <motionSmallNoise>0.05</motionSmallNoise>
+        <motionDriftNoise>0.03</motionDriftNoise>
+        <motionDriftNoiseTime>5.0</motionDriftNoiseTime>
+    </plugin> 
+  </gazebo>
 </robot>
 

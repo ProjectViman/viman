@@ -1,5 +1,5 @@
-#ifndef VIMAN_CTRL_H
-#define VIMAN_CTRL_H
+#ifndef PLUGIN_VIMAN_FLIGHT_H
+#define PLUGIN_VIMAN_FLIGHT_H
 
 #include "gazebo/gazebo.hh"
 #include "gazebo/physics/physics.hh"
@@ -25,13 +25,12 @@
 #define LANDING_MODEL       3
 
 #define EPS 1E-6
-namespace gazebo
-{
-class VimanCtrl : public ModelPlugin
-{
+
+namespace gazebo{
+class VimanFlight : public ModelPlugin{
 public:
-  VimanCtrl();
-  virtual ~VimanCtrl();
+  VimanFlight();
+  virtual ~VimanFlight();
 
 protected:
   virtual void Load(physics::ModelPtr _model, sdf::ElementPtr _sdf);
@@ -47,11 +46,8 @@ private:
   bool m_velMode;
   unsigned int navi_state;
   
-  
-  /// \brief The parent World
   physics::WorldPtr world;
 
-  /// \brief The link referred to by this plugin
   physics::LinkPtr link;
 
   ros::NodeHandle* node_handle_;
@@ -70,7 +66,6 @@ private:
   ros::Publisher pub_gt_vec_;   //ground truth velocity in the body frame
   ros::Publisher pub_gt_acc_;   //ground truth acceleration in the body frame
 
-
   geometry_msgs::Twist cmd_val;
   // callback functions for subscribers
   void CmdCallback(const geometry_msgs::TwistConstPtr&);
@@ -80,7 +75,6 @@ private:
   void LandCallback(const std_msgs::EmptyConstPtr&);
   void ResetCallback(const std_msgs::EmptyConstPtr&);
   void SwitchModeCallback(const std_msgs::BoolConstPtr&);
- 
  
   ros::Time state_stamp;
   ignition::math::Pose3d pose;
@@ -116,7 +110,6 @@ private:
   ignition::math::Vector3d inertia;
   double mass;
 
-  /// \brief save last_time
   common::Time last_time;
 
   // Pointer to the update event connection
@@ -125,4 +118,4 @@ private:
 
 }
 
-#endif // VIMAN_CTRL_H
+#endif // PLUGIN_VIMAN_FLIGHT_H

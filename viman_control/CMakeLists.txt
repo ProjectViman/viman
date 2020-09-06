@@ -43,25 +43,47 @@ catkin_package(
 
 include_directories(${catkin_INCLUDE_DIRS})
 
-################## A simple model controller #############
-add_library(plugin_viman_ctrl SHARED
-    src/plugin_viman_ctrl.cpp
+############# Plugin for simulating flight #############
+add_library(plugin_viman_flight SHARED
+    src/plugin_viman_flight.cpp
     src/pid_controller.cpp
-    include/viman_ctrl.h
+    include/plugin_viman_flight.h
     include/pid_controller.h
 )
 
-target_link_libraries(plugin_viman_ctrl
+target_link_libraries(plugin_viman_flight
    ${catkin_LIBRARIES}
    ${GAZEBO_LIBRARIES}
 )
 
-set_target_properties(plugin_viman_ctrl
+set_target_properties(plugin_viman_flight
     PROPERTIES 
     LIBRARY_OUTPUT_DIRECTORY
     ${PROJECT_SOURCE_DIR}/plugins
 )
 
+############# Plugin for simulating altimeter #############
+add_library(plugin_altimeter SHARED
+    src/plugin_altimeter.cpp
+    include/plugin_altimeter.h
+)
 
-install(DIRECTORY include launch plugins src scripts
+target_link_libraries(plugin_altimeter
+   ${catkin_LIBRARIES}
+   ${GAZEBO_LIBRARIES}
+)
+
+set_target_properties(plugin_altimeter
+    PROPERTIES 
+    LIBRARY_OUTPUT_DIRECTORY
+    ${PROJECT_SOURCE_DIR}/plugins
+)
+
+#### ROS Node for manual operation ####
+add_executable(viman_key_ctrl src/viman_key_ctrl.cpp
+							  include/viman_key_ctrl.h)
+target_link_libraries(viman_key_ctrl ${catkin_LIBRARIES})
+
+
+install(DIRECTORY include plugins src
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})

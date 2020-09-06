@@ -7,7 +7,7 @@
 		default="$(find viman_visualize)/config/urdf.rviz" />
 	
   <arg name="gui" 
-		value="true" />	
+		value="false" />	
   <param name="robot_description" 
 		 command="$(find xacro)/xacro --inorder $(arg model)" />
 	

@@ -1,4 +1,4 @@
-#include "viman_ctrl.h"
+#include "plugin_viman_flight.h"
 
 
 #include <cmath>
@@ -9,20 +9,20 @@
 namespace gazebo {
 
 // Constructor
-VimanCtrl::VimanCtrl(){ 
+VimanFlight::VimanFlight(){ 
   navi_state = LANDED_MODEL;	// Initial navigation state
   m_posCtrl = false;			// Position control mode off
   m_velMode = false;			// Velocity control mode off
 }
 
 // Destructor
-VimanCtrl::~VimanCtrl(){
+VimanFlight::~VimanFlight(){
   node_handle_->shutdown();
   delete node_handle_;
 }
 
-// Load the control
-void VimanCtrl::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf){
+// Load the plugin
+void VimanFlight::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf){
 
   if(!ros::isInitialized()){
       ROS_FATAL_STREAM("A ROS node for Gazebo has not been initialized, unable to load plugin. "
@@ -34,11 +34,11 @@ void VimanCtrl::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf){
   
   //load parameters
   cmd_normal_topic_ = "/cmd_vel";
-  takeoff_topic_ = "viman/takeoff";
-  land_topic_ = "viman/land";
-  reset_topic_ = "viman/reset";
-  posctrl_topic_ = "viman/posctrl";
-  gt_topic_ = "viman/gt_pose";
+  takeoff_topic_ = "/viman/takeoff";
+  land_topic_ = "/viman/land";
+  reset_topic_ = "/viman/reset";
+  posctrl_topic_ = "/viman/posctrl";
+  gt_topic_ = "/viman/gt_pose";
   switch_mode_topic_ = "/viman/vel_mode";
   
   // Obtaining parameters from SDF
@@ -95,7 +95,7 @@ void VimanCtrl::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf){
   if (!cmd_normal_topic_.empty()){
     ros::SubscribeOptions ops = ros::SubscribeOptions::create<geometry_msgs::Twist>(
       cmd_normal_topic_, 1,
-      boost::bind(&VimanCtrl::CmdCallback, this, _1),
+      boost::bind(&VimanFlight::CmdCallback, this, _1),
       ros::VoidPtr(), &callback_queue_);
     cmd_subscriber_ = node_handle_->subscribe(ops);
     
@@ -109,7 +109,7 @@ void VimanCtrl::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf){
   if (!posctrl_topic_.empty()){
     ros::SubscribeOptions ops = ros::SubscribeOptions::create<std_msgs::Bool>(
       posctrl_topic_, 1,
-      boost::bind(&VimanCtrl::PosCtrlCallback, this, _1),
+      boost::bind(&VimanFlight::PosCtrlCallback, this, _1),
       ros::VoidPtr(), &callback_queue_);
     posctrl_subscriber_ = node_handle_->subscribe(ops);
     
@@ -123,7 +123,7 @@ void VimanCtrl::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf){
   if (!imu_topic_.empty()){
     ros::SubscribeOptions ops = ros::SubscribeOptions::create<sensor_msgs::Imu>(
       imu_topic_, 1,
-      boost::bind(&VimanCtrl::ImuCallback, this, _1),
+      boost::bind(&VimanFlight::ImuCallback, this, _1),
       ros::VoidPtr(), &callback_queue_);
     imu_subscriber_ = node_handle_->subscribe(ops);
     
@@ -138,7 +138,7 @@ void VimanCtrl::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf){
   if (!takeoff_topic_.empty()){
     ros::SubscribeOptions ops = ros::SubscribeOptions::create<std_msgs::Empty>(
       takeoff_topic_, 1,
-      boost::bind(&VimanCtrl::TakeoffCallback, this, _1),
+      boost::bind(&VimanFlight::TakeoffCallback, this, _1),
       ros::VoidPtr(), &callback_queue_);
     takeoff_subscriber_ = node_handle_->subscribe(ops);
     if( takeoff_subscriber_.getTopic() != "")
@@ -151,7 +151,7 @@ void VimanCtrl::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf){
   if (!land_topic_.empty()){
     ros::SubscribeOptions ops = ros::SubscribeOptions::create<std_msgs::Empty>(
       land_topic_, 1,
-      boost::bind(&VimanCtrl::LandCallback, this, _1),
+      boost::bind(&VimanFlight::LandCallback, this, _1),
       ros::VoidPtr(), &callback_queue_);
     land_subscriber_ = node_handle_->subscribe(ops);
   }
@@ -160,7 +160,7 @@ void VimanCtrl::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf){
   if (!reset_topic_.empty()){
     ros::SubscribeOptions ops = ros::SubscribeOptions::create<std_msgs::Empty>(
       reset_topic_, 1,
-      boost::bind(&VimanCtrl::ResetCallback, this, _1),
+      boost::bind(&VimanFlight::ResetCallback, this, _1),
       ros::VoidPtr(), &callback_queue_);
     reset_subscriber_ = node_handle_->subscribe(ops);
   }
@@ -169,7 +169,7 @@ void VimanCtrl::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf){
   if (!switch_mode_topic_.empty()){
       ros::SubscribeOptions ops = ros::SubscribeOptions::create<std_msgs::Bool>(
         switch_mode_topic_, 1,
-        boost::bind(&VimanCtrl::SwitchModeCallback, this, _1),
+        boost::bind(&VimanFlight::SwitchModeCallback, this, _1),
         ros::VoidPtr(), &callback_queue_);
       switch_mode_subscriber_ = node_handle_->subscribe(ops);
   }
@@ -182,7 +182,6 @@ void VimanCtrl::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf){
   pub_gt_vec_ = node_handle_->advertise<geometry_msgs::Twist>("viman/gt_vel", 1024);
   pub_gt_acc_ = node_handle_->advertise<geometry_msgs::Twist>("viman/gt_acc", 1024);
       
-
   LoadControllerSettings(_model, _sdf);
   
   Reset();
@@ -191,10 +190,10 @@ void VimanCtrl::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf){
   // Listen to the update event. This event is broadcast every
   // simulation iteration.
   updateConnection = event::Events::ConnectWorldUpdateBegin(
-      boost::bind(&VimanCtrl::Update, this));
+      boost::bind(&VimanFlight::Update, this));
 }
 
-void VimanCtrl::LoadControllerSettings(physics::ModelPtr _model, sdf::ElementPtr _sdf){
+void VimanFlight::LoadControllerSettings(physics::ModelPtr _model, sdf::ElementPtr _sdf){
     controllers_.roll.Load(_sdf, "rollpitch");
     controllers_.pitch.Load(_sdf, "rollpitch");
     controllers_.yaw.Load(_sdf, "yaw");
@@ -208,9 +207,8 @@ void VimanCtrl::LoadControllerSettings(physics::ModelPtr _model, sdf::ElementPtr
     
 }
 
-////////////////////////////////////////////////////////////////////////////////
 // Callbacks
-void VimanCtrl::CmdCallback(const geometry_msgs::TwistConstPtr& cmd){
+void VimanFlight::CmdCallback(const geometry_msgs::TwistConstPtr& cmd){
   cmd_val = *cmd;
 
   static common::Time last_sim_time = world->SimTime();
@@ -239,12 +237,12 @@ void VimanCtrl::CmdCallback(const geometry_msgs::TwistConstPtr& cmd){
 
 }
 
-void VimanCtrl::PosCtrlCallback(const std_msgs::BoolConstPtr& cmd){
+void VimanFlight::PosCtrlCallback(const std_msgs::BoolConstPtr& cmd){
     m_posCtrl = cmd->data;
 }
 
 /*
-void VimanCtrl::ImuCallback(const sensor_msgs::ImuConstPtr& imu){
+void VimanFlight::ImuCallback(const sensor_msgs::ImuConstPtr& imu){
   //directly read the quternion from the IMU data
   pose.Rot().Set(imu->orientation.w, imu->orientation.x, imu->orientation.y, imu->orientation.z);
   euler = pose.Rot().Euler();
@@ -252,7 +250,7 @@ void VimanCtrl::ImuCallback(const sensor_msgs::ImuConstPtr& imu){
 }
 * */
 
-void VimanCtrl::TakeoffCallback(const std_msgs::EmptyConstPtr& msg){
+void VimanFlight::TakeoffCallback(const std_msgs::EmptyConstPtr& msg){
   if(navi_state == LANDED_MODEL)
   {
     navi_state = TAKINGOFF_MODEL;
@@ -261,7 +259,7 @@ void VimanCtrl::TakeoffCallback(const std_msgs::EmptyConstPtr& msg){
   }
 }
 
-void VimanCtrl::LandCallback(const std_msgs::EmptyConstPtr& msg){
+void VimanFlight::LandCallback(const std_msgs::EmptyConstPtr& msg){
   if(navi_state == FLYING_MODEL||navi_state == TAKINGOFF_MODEL)
   {
     navi_state = LANDING_MODEL;
@@ -271,17 +269,16 @@ void VimanCtrl::LandCallback(const std_msgs::EmptyConstPtr& msg){
 
 }
 
-void VimanCtrl::ResetCallback(const std_msgs::EmptyConstPtr& msg){
+void VimanFlight::ResetCallback(const std_msgs::EmptyConstPtr& msg){
   ROS_INFO("%s","\nReset Viman");
 }
 
-void VimanCtrl::SwitchModeCallback(const std_msgs::BoolConstPtr& msg){
+void VimanFlight::SwitchModeCallback(const std_msgs::BoolConstPtr& msg){
     m_velMode = msg->data;
 }
 
-////////////////////////////////////////////////////////////////////////////////
 // Update the controller
-void VimanCtrl::Update(){
+void VimanFlight::Update(){
     
     // Get new commands/state
     callback_queue_.callAvailable();
@@ -298,7 +295,7 @@ void VimanCtrl::Update(){
     last_time = sim_time;   
 }
 
-void VimanCtrl::UpdateState(double dt){
+void VimanFlight::UpdateState(double dt){
     if(navi_state == TAKINGOFF_MODEL){
         m_timeAfterCmd += dt;
         if (m_timeAfterCmd > 0.5){
@@ -316,7 +313,7 @@ void VimanCtrl::UpdateState(double dt){
 }
 
 
-void VimanCtrl::UpdateDynamics(double dt){
+void VimanFlight::UpdateDynamics(double dt){
     ignition::math::Vector3d force, torque;
    
     // Get Pose/Orientation from Gazebo (if no state subscriber is active)
@@ -378,8 +375,8 @@ void VimanCtrl::UpdateDynamics(double dt){
     force.Set(0.0, 0.0, 0.0);
     torque.Set(0.0, 0.0, 0.0);
     
-    if( m_posCtrl){
-        //position control
+    if(m_posCtrl){
+        //position control : Maneuvring via X, Y, Z coordinates
         if(navi_state == FLYING_MODEL){
             double vx = controllers_.pos_x.update(cmd_val.linear.x, position.X(), poschange.X(), dt);
             double vy = controllers_.pos_y.update(cmd_val.linear.y, position.Y(), poschange.Y(), dt);
@@ -391,65 +388,60 @@ void VimanCtrl::UpdateDynamics(double dt){
             double roll_command  = -controllers_.velocity_y.update(vb.Y(), velocity_xy.Y(), acceleration_xy.Y(), dt) / gravity;
             torque.X() = inertia.X() *  controllers_.roll.update(roll_command, euler.X(), angular_velocity_body.X(), dt);
             torque.Y() = inertia.Y() *  controllers_.pitch.update(pitch_command, euler.Y(), angular_velocity_body.Y(), dt);            
-            force.Z()  = mass      * (controllers_.velocity_z.update(vz,  velocity.Z(), acceleration.Z(), dt) + load_factor * gravity);
+            force.Z()  = mass      * (controllers_.velocity_z.update(vz,velocity.Z(), acceleration.Z(), dt) + load_factor * gravity);
         }
-    }else{
+    }
+    else{
         //normal control
-        if( navi_state == FLYING_MODEL )//&& cmd_val.linear.x >= 0 && cmd_val.linear.y >= 0)
-        {
+        if(navi_state == FLYING_MODEL){
           //hovering
           double pitch_command =  controllers_.velocity_x.update(cmd_val.linear.x, velocity_xy.X(), acceleration_xy.X(), dt) / gravity;
           double roll_command  = -controllers_.velocity_y.update(cmd_val.linear.y, velocity_xy.Y(), acceleration_xy.Y(), dt) / gravity;
-          torque.X() = inertia.X() *  controllers_.roll.update(roll_command, euler.X(), angular_velocity_body.X(), dt);
-          torque.Y() = inertia.Y() *  controllers_.pitch.update(pitch_command, euler.Y(), angular_velocity_body.Y(), dt);
-        }else{
+          torque.X() = inertia.X()*controllers_.roll.update(roll_command, euler.X(), angular_velocity_body.X(), dt);
+          torque.Y() = inertia.Y()*controllers_.pitch.update(pitch_command, euler.Y(), angular_velocity_body.Y(), dt);
+        }
+        else{
           //control by velocity
-          if( m_velMode){
+          if(m_velMode){
               double pitch_command =  controllers_.velocity_x.update(cmd_val.angular.x, velocity_xy.X(), velocity_xy.X(), dt) / gravity;
               double roll_command  = -controllers_.velocity_y.update(cmd_val.angular.y, velocity_xy.Y(), velocity_xy.Y(), dt) / gravity;
-              torque.X() = inertia.X() *  controllers_.roll.update(roll_command, euler.X(), angular_velocity_body.X(), dt);
-              torque.Y() = inertia.Y() *  controllers_.pitch.update(pitch_command, euler.Y(), angular_velocity_body.Y(), dt);              
-          }else{
+              torque.X() = inertia.X()*controllers_.roll.update(roll_command, euler.X(), angular_velocity_body.X(), dt);
+              torque.Y() = inertia.Y()*controllers_.pitch.update(pitch_command, euler.Y(), angular_velocity_body.Y(), dt);              
+          }
+          else{
             //control by tilting
-            torque.X() = inertia.X() *  controllers_.roll.update(cmd_val.angular.x, euler.X(), angular_velocity_body.X(), dt);
-            torque.Y() = inertia.Y() *  controllers_.pitch.update(cmd_val.angular.y, euler.Y(), angular_velocity_body.Y(), dt);
+            torque.X() = inertia.X()*controllers_.roll.update(cmd_val.angular.x, euler.X(), angular_velocity_body.X(), dt);
+            torque.Y() = inertia.Y()*controllers_.pitch.update(cmd_val.angular.y, euler.Y(), angular_velocity_body.Y(), dt);
           }
         }
-        torque.Z() = inertia.Z() *  controllers_.yaw.update(cmd_val.angular.z, angular_velocity.Z(), 0, dt);
-        force.Z()  = mass      * (controllers_.velocity_z.update(cmd_val.linear.z,  velocity.Z(), acceleration.Z(), dt) + load_factor * gravity);
+        torque.Z() = inertia.Z()*controllers_.yaw.update(cmd_val.angular.z, angular_velocity.Z(), 0, dt);
+        force.Z()  = mass*(controllers_.velocity_z.update(cmd_val.linear.z,  velocity.Z(), acceleration.Z(), dt) + load_factor * gravity);
     }
 
-    
     if (max_force_ > 0.0 && force.Z() > max_force_) force.Z() = max_force_;
     if (force.Z() < 0.0) force.Z() = 0.0;
     
-    
-  
     // process robot state information
-    if(navi_state == LANDED_MODEL)
-    {
+    if(navi_state == LANDED_MODEL){
   
     }
-    else if(navi_state == FLYING_MODEL)
-    {
+    else if(navi_state == FLYING_MODEL){
       link->AddRelativeForce(force);
       link->AddRelativeTorque(torque);
     }
-    else if(navi_state == TAKINGOFF_MODEL)
-    {
+    else if(navi_state == TAKINGOFF_MODEL){
       link->AddRelativeForce(force*1.5);
       link->AddRelativeTorque(torque*1.5);
     }
-    else if(navi_state == LANDING_MODEL)
-    {
+    else if(navi_state == LANDING_MODEL){
       link->AddRelativeForce(force*0.8);
       link->AddRelativeTorque(torque*0.8);
     }
-   
+
 }
 
 // Reset the controller
-void VimanCtrl::Reset(){
+void VimanFlight::Reset(){
   controllers_.roll.reset();
   controllers_.pitch.reset();
   controllers_.yaw.reset();
@@ -470,6 +462,6 @@ void VimanCtrl::Reset(){
 }
 
 // Register this plugin with the simulator
-GZ_REGISTER_MODEL_PLUGIN(VimanCtrl)
+GZ_REGISTER_MODEL_PLUGIN(VimanFlight)
 
 } // namespace gazebo

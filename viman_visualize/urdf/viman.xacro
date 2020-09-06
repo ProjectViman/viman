@@ -62,10 +62,10 @@
   <link name="base_link">
     <inertial>
       <origin
-        xyz="-2.0447E-05 0.019934 -2.776E-05"
+        xyz="0 0 0"
         rpy="0 0 0" />
       <mass
-        value="0.2066" />
+        value="0.6" />
       <inertia
         ixx="3.294E-05"
         ixy="-2.7157E-10"
@@ -109,7 +109,7 @@
   <xacro:propeller_link id="4" com="2.7756E-17 -0.00027271 2.7756E-17" xyz="-0.084703 0.085003 0.0335" rpy="1.5708 0 2.5345"/>
   
   <gazebo>
-    <plugin name='uav_viman' filename='libplugin_viman_ctrl.so'>
+    <plugin name='viman_flight' filename='libplugin_viman_flight.so'>
         <bodyName>base_link</bodyName>
         <imuTopic>/viman/imu</imuTopic>
         <rollpitchProportionalGain>10.0</rollpitchProportionalGain>
@@ -136,6 +136,117 @@
         <motionDriftNoise>0.03</motionDriftNoise>
         <motionDriftNoiseTime>5.0</motionDriftNoiseTime>
     </plugin> 
+  </gazebo>
+  
+  <xacro:property name="cam_origin_offset" value="0 -0.03 0.01"/>
+  <xacro:property name="camera_dimensions" value="0.01 0.01 0.01"/>
+  
+  <xacro:property name="altimeter_origin_offset" value="0 0 0.1"/>
+  <xacro:property name="altimeter_dimensions" value="0.005 0.005 0.005"/>
+  
+  <link name="camera">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+		<box size="${camera_dimensions}"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+    <box size="${camera_dimensions}"/>
+      </geometry>
+      <material name="red"/>
+    </visual>
+    <inertial>
+      <mass value="1e-5" />
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
+    </inertial>
+  </link> 
+  <joint name="camera_joint" type="fixed">
+    <origin xyz="${cam_origin_offset}" rpy="0 0 -1.5708"/>
+    <parent link="base_link"/>
+    <child link="camera"/>
+  </joint>
+  
+  <!-- Camera: Plugin -->
+  <gazebo reference="camera">
+	<material>Gazebo/Red</material>  
+    <sensor type="camera" name="viman_frnt_cam">
+      <update_rate>30.0</update_rate>
+      <camera name="viman_frnt_cam">
+        <horizontal_fov>1.3962634</horizontal_fov>
+        <image>
+          <width>800</width>
+          <height>800</height>
+          <format>R8G8B8</format>
+        </image>
+        <clip>
+          <near>0.02</near>
+          <far>300</far>
+        </clip>
+        <noise>
+          <type>gaussian</type>
+          <!-- Noise is sampled independently per pixel on each frame.
+               That pixel's noise value is added to each of its color
+               channels, which at that point lie in the range [0,1]. -->
+          <mean>0.0</mean>
+          <stddev>0.007</stddev>
+        </noise>
+      </camera>
+      <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+        <alwaysOn>true</alwaysOn>
+        <updateRate>0.0</updateRate>
+        <cameraName>viman_frnt_cam</cameraName>
+        <imageTopicName>viman_frnt_camera_out</imageTopicName>
+        <cameraInfoTopicName>viman_frnt_cam_info</cameraInfoTopicName>
+        <frameName>camera_link</frameName>
+        <hackBaseline>0.07</hackBaseline>
+        <distortionK1>0.0</distortionK1>
+        <distortionK2>0.0</distortionK2>
+        <distortionK3>0.0</distortionK3>
+        <distortionT1>0.0</distortionT1>
+        <distortionT2>0.0</distortionT2>
+      </plugin>
+    </sensor>
+  </gazebo>
+ 
+   <link name="altimeter">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+		<box size="${altimeter_dimensions}"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+    <box size="${altimeter_dimensions}"/>
+      </geometry>
+      <material name="blue"/>
+    </visual>
+    <inertial>
+      <mass value="1e-5" />
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
+    </inertial>
+  </link> 
+  <joint name="altimeter_joint" type="fixed">
+    <origin xyz="${altimeter_origin_offset}" rpy="0 0 0"/>
+    <parent link="base_link"/>
+    <child link="altimeter"/>
+  </joint>
+  
+  <gazebo>
+	  <material>Gazebo/Blue</material>
+	  <plugin name='altimeter_plugin' filename='libplugin_altimeter.so'>
+		<bodyName>altimeter</bodyName>
+		<robotNamespace>/viman</robotNamespace>
+		<frameId>altimeter</frameId>
+		<altimeterTopicName>/height</altimeterTopicName>
+		<elevation>0</elevation>
+	  </plugin>
   </gazebo>
 </robot>
 

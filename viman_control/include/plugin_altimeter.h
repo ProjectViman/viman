@@ -2,8 +2,7 @@
 #define PLUGIN_ALTIMETER_H
 
 #include <ros/ros.h>
-#include <geometry_msgs/PointStamped.h>
-#include <dynamic_reconfigure/server.h>
+#include <ros/callback_queue.h>
 
 #include <gazebo/common/Plugin.hh>
 #include <gazebo/common/Events.hh>
@@ -11,12 +10,14 @@
 
 #include <ignition/math4/ignition/math.hh>
 
-#define DEFAULT_ELEVATION 0.0
+#include <std_msgs/Empty.h>
+#include <geometry_msgs/PointStamped.h>
+
 
 namespace gazebo{
 
 class Altimeter : public ModelPlugin{
-public:
+public: 
   Altimeter();
   virtual ~Altimeter();
 
@@ -31,22 +32,23 @@ private:
   physics::LinkPtr link;
 
   ros::NodeHandle* node_handle_;
-  ros::Publisher altimeter_publisher_;
 
+  ros::CallbackQueue callback_queue_;  
+  ros::Publisher altimeter_publisher_;
+  ros::Subscriber zeroErr_subscriber_;
+  
+  void ZeroErrCallbck(const std_msgs::EmptyConstPtr&);
+  
   geometry_msgs::PointStamped height_;
 
-  std::string namespace_;
   std::string altimeter_topic_;
+  std::string zeroErr_topic_;
   std::string link_name_;
   std::string frame_id_;
 
-  double elevation_;
-  double noise_;
-  double drift_;
-  double driftFrequency_;
-  double offset_;
-  
-  common::Time last_time;
+  double noise_;		// std dev of additive Gaussian noise
+  double zero_err_ = 0;	// to set a particular height as reference
+
   event::ConnectionPtr updateConnection;
 };
 

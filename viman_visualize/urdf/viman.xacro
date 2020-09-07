@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <robot name="viman" xmlns:xacro="http://www.ros.org/wiki/xacro">
-
+  
+  <!-- Sensor properties -->
+  <xacro:property name="cam_origin_offset" value="0 -0.03 0.01"/>
+  <xacro:property name="camera_dimensions" value="0.01 0.01 0.01"/>
+  
+  <xacro:property name="altimeter_origin_offset" value="0 0 0.015"/>
+  <xacro:property name="altimeter_dimensions" value="0.005 0.005 0.002"/>
+  
   <!-- Macro to define propeller links -->
   <!-- Input parameters: propeller ID, pose of the joint, xyz of CoM -->
   <xacro:macro name="propeller_link" params="id com xyz rpy">        
@@ -108,6 +115,7 @@
   <xacro:propeller_link id="3" com="-2.7756E-17 -0.00027271 0" xyz="0.085003 0.084703 0.0335" rpy="1.5708 0 1.1739"/>
   <xacro:propeller_link id="4" com="2.7756E-17 -0.00027271 2.7756E-17" xyz="-0.084703 0.085003 0.0335" rpy="1.5708 0 2.5345"/>
   
+  <!-- Flight plugin -->
   <gazebo>
     <plugin name='viman_flight' filename='libplugin_viman_flight.so'>
         <bodyName>base_link</bodyName>
@@ -137,13 +145,7 @@
         <motionDriftNoiseTime>5.0</motionDriftNoiseTime>
     </plugin> 
   </gazebo>
-  
-  <xacro:property name="cam_origin_offset" value="0 -0.03 0.01"/>
-  <xacro:property name="camera_dimensions" value="0.01 0.01 0.01"/>
-  
-  <xacro:property name="altimeter_origin_offset" value="0 0 0.1"/>
-  <xacro:property name="altimeter_dimensions" value="0.005 0.005 0.005"/>
-  
+    
   <link name="camera">
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -212,7 +214,7 @@
     </sensor>
   </gazebo>
  
-   <link name="altimeter">
+  <link name="altimeter">
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
@@ -237,16 +239,19 @@
     <parent link="base_link"/>
     <child link="altimeter"/>
   </joint>
+  <gazebo reference="altimeter">
+	<material>Gazebo/SkyBlue</material>
+  </gazebo>
   
+  <!-- Altimeter plugin -->
   <gazebo>
-	  <material>Gazebo/Blue</material>
 	  <plugin name='altimeter_plugin' filename='libplugin_altimeter.so'>
 		<bodyName>altimeter</bodyName>
-		<robotNamespace>/viman</robotNamespace>
 		<frameId>altimeter</frameId>
-		<altimeterTopicName>/height</altimeterTopicName>
-		<elevation>0</elevation>
+		<altimeterTopicName>/viman/height</altimeterTopicName>
+		<noise>0.01</noise>
 	  </plugin>
   </gazebo>
+  
 </robot>
 

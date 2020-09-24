@@ -21,7 +21,7 @@
 
 #define LANDED_MODEL        0
 #define FLYING_MODEL        1
-#define TAKINGOFF_MODEL     2
+#define TAKEOFF_READY       2
 #define LANDING_MODEL       3
 
 #define EPS 1E-6

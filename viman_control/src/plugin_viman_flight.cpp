@@ -253,24 +253,24 @@ void VimanFlight::ImuCallback(const sensor_msgs::ImuConstPtr& imu){
 void VimanFlight::TakeoffCallback(const std_msgs::EmptyConstPtr& msg){
   if(navi_state == LANDED_MODEL)
   {
-    navi_state = TAKINGOFF_MODEL;
+    navi_state = TAKEOFF_READY;
     m_timeAfterCmd = 0;
-    ROS_INFO("%s","\nViman takes off!!");
+    ROS_INFO("Ready to take off!!");
   }
 }
 
 void VimanFlight::LandCallback(const std_msgs::EmptyConstPtr& msg){
-  if(navi_state == FLYING_MODEL||navi_state == TAKINGOFF_MODEL)
+  if(navi_state == FLYING_MODEL||navi_state == TAKEOFF_READY)
   {
     navi_state = LANDING_MODEL;
     m_timeAfterCmd = 0;
-    ROS_INFO("%s","\nViman lands!!");
+    ROS_INFO("Viman lands.");
   }
 
 }
 
 void VimanFlight::ResetCallback(const std_msgs::EmptyConstPtr& msg){
-  ROS_INFO("%s","\nReset Viman");
+  ROS_INFO("Reset Viman");
 }
 
 void VimanFlight::SwitchModeCallback(const std_msgs::BoolConstPtr& msg){
@@ -296,19 +296,19 @@ void VimanFlight::Update(){
 }
 
 void VimanFlight::UpdateState(double dt){
-    if(navi_state == TAKINGOFF_MODEL){
+    if(navi_state == TAKEOFF_READY){
         m_timeAfterCmd += dt;
-        if (m_timeAfterCmd > 0.5){
+        if(m_timeAfterCmd > 0.5){
             navi_state = FLYING_MODEL;
-            std::cout << "Entering flying model!" << std::endl;
         }
-    }else if(navi_state == LANDING_MODEL){
+    }
+    else if(navi_state == LANDING_MODEL){
         m_timeAfterCmd += dt;
         if(m_timeAfterCmd > 1.0){
             navi_state = LANDED_MODEL;
-            std::cout << "Landed!" <<std::endl;
         }
-    }else
+    }
+    else
         m_timeAfterCmd = 0;
 }
 
@@ -422,17 +422,14 @@ void VimanFlight::UpdateDynamics(double dt){
     if (force.Z() < 0.0) force.Z() = 0.0;
     
     // process robot state information
-    if(navi_state == LANDED_MODEL){
-  
-    }
-    else if(navi_state == FLYING_MODEL){
+	if(navi_state == FLYING_MODEL){
       link->AddRelativeForce(force);
       link->AddRelativeTorque(torque);
     }
-    else if(navi_state == TAKINGOFF_MODEL){
-      link->AddRelativeForce(force*1.5);
-      link->AddRelativeTorque(torque*1.5);
-    }
+    else if(navi_state == TAKEOFF_READY){
+	  link->AddRelativeForce(force*0);
+      link->AddRelativeTorque(force*0);
+	}
     else if(navi_state == LANDING_MODEL){
       link->AddRelativeForce(force*0.8);
       link->AddRelativeTorque(torque*0.8);

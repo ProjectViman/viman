@@ -80,10 +80,14 @@ set_target_properties(plugin_altimeter
 )
 
 #### ROS Node for manual operation ####
-add_executable(viman_key_ctrl src/viman_key_ctrl.cpp
-							  include/viman_key_ctrl.h)
+add_executable(viman_key_ctrl src/viman_key_ctrl.cpp src/viman.cpp
+							  include/viman_key_ctrl.h include/viman.h)
 target_link_libraries(viman_key_ctrl ${catkin_LIBRARIES})
 
+#### ROS Node for semi-autonomous operation ####
+add_executable(viman_sa src/viman_sa.cpp src/vm_pid.cpp src/viman.cpp
+				include/viman_sa.h include/vm_pid.h include/viman.h)
+target_link_libraries(viman_sa ${catkin_LIBRARIES})
 
 install(DIRECTORY include plugins src
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})

@@ -1,7 +1,10 @@
-#ifndef VIMAN_KEY_CTRL_H
-#define VIMAN_KEY_CTRL_H
+#ifndef VIMAN_SA
+#define VIMAN_SA
 
 #include "viman.h"
+#include "vm_pid.h"
+
+#include <geometry_msgs/PointStamped.h>
 
 // Libraries to read from keyboard
 #include <termios.h>
@@ -13,11 +16,21 @@
 #define MAX_LINEAR_Z 2
 #define MAX_YAW 2.5
 
-// Store current cmd values
-float cur_values[4];
+// Store setpoints
+float set_points[4];				// z, x, y, yaw
+
+// Store velocity commands
+float cmd_values[4];
+
+// Sensing and related variables
+float sensor_values[4];
 
 // VIMAN instance
-Viman vi;
+Viman vm;
+
+// Controller and related
+VmPID height_controller_;
+bool isPidRunning;
 
 // Vars to read user cmds
 static struct termios old, current;
@@ -30,4 +43,7 @@ void resetTermios(void);
 char getch(void);
 void read_input(void);
 
-#endif // VIMAN_KEY_CTRL_H
+// Functions to assist semi-autonomous movement
+void HeightCallbck(const geometry_msgs::PointStamped&);
+
+#endif // VIMAN_SA

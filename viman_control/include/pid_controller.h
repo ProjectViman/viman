@@ -4,6 +4,10 @@
 
 #include <gazebo/gazebo.hh>
 
+/**
+ * @brief PID controller class for simulating the drone in Gazebo.
+ */
+
 class PIDController {
 public:
   PIDController();

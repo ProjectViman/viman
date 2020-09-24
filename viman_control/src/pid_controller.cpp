@@ -1,7 +1,6 @@
 #include "pid_controller.h"
 
-PIDController::PIDController()
-{
+PIDController::PIDController(){
     
 }
 
@@ -10,8 +9,7 @@ PIDController::~PIDController(){
 }
 
 
-void PIDController::Load(sdf::ElementPtr _sdf, const std::string& prefix)
-{
+void PIDController::Load(sdf::ElementPtr _sdf, const std::string& prefix){
   gain_p = 5.0;
   gain_d = 1.0;
   gain_i = 0.0;
@@ -27,8 +25,7 @@ void PIDController::Load(sdf::ElementPtr _sdf, const std::string& prefix)
 
 }
 
-double PIDController::update(double new_input, double x, double dx, double dt)
-{
+double PIDController::update(double new_input, double x, double dx, double dt){
   // limit command
   if (limit > 0.0 && fabs(new_input) > limit) new_input = (new_input < 0 ? -1.0 : 1.0) * limit;
 
@@ -48,8 +45,7 @@ double PIDController::update(double new_input, double x, double dx, double dt)
   return output;
 }
 
-void PIDController::reset()
-{
+void PIDController::reset(){
   input = dinput = 0;
   p = i = d = output = 0;
 }

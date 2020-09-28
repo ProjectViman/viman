@@ -28,5 +28,10 @@ rosrun viman_control viman_sa
 ```
 Step 3: Play the simulation in Gazebo, place the focus of the terminal opened in step 2 and read the instructions provided by the ROS node.
 
+### To see sensor data (IMU and altimeter)
+```
+rosrun viman_control vm_sensor_data
+```
+
 [1]:https://github.com/AuntyVIEW/viman/tree/master/viman_control
 [2]:https://github.com/AuntyVIEW/viman/tree/master/viman_visualize

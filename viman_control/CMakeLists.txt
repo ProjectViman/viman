@@ -5,6 +5,8 @@ find_package(catkin REQUIRED COMPONENTS
 			 roscpp
 			 rospy
 			 std_msgs
+			 sensor_msgs
+			 geometry_msgs
 			 image_transport
 			 message_generation)
 
@@ -30,7 +32,10 @@ include_directories(${OpenCV_INCLUDE_DIR}
                     ${GAZEBO_INCLUDE_DIRS}
                     ${OGRE_INCLUDE_DIRS}
                     ${OGRE-Terrain_INCLUDE_DIRS}
-                    include)
+                    include
+                    include/plugin
+                    include/utility
+                    )
 
 
 set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
@@ -45,10 +50,8 @@ include_directories(${catkin_INCLUDE_DIRS})
 
 ############# Plugin for simulating flight #############
 add_library(plugin_viman_flight SHARED
-    src/plugin_viman_flight.cpp
-    src/pid_controller.cpp
-    include/plugin_viman_flight.h
-    include/pid_controller.h
+    src/plugin/plugin_viman_flight.cpp
+    src/plugin/pid_controller.cpp
 )
 
 target_link_libraries(plugin_viman_flight
@@ -64,8 +67,7 @@ set_target_properties(plugin_viman_flight
 
 ############# Plugin for simulating altimeter #############
 add_library(plugin_altimeter SHARED
-    src/plugin_altimeter.cpp
-    include/plugin_altimeter.h
+    src/plugin/plugin_altimeter.cpp
 )
 
 target_link_libraries(plugin_altimeter
@@ -79,15 +81,17 @@ set_target_properties(plugin_altimeter
     ${PROJECT_SOURCE_DIR}/plugins
 )
 
-#### ROS Node for manual operation ####
-add_executable(viman_key_ctrl src/viman_key_ctrl.cpp src/viman.cpp
-							  include/viman_key_ctrl.h include/viman.h)
+#### ROS node for manual operation ####
+add_executable(viman_key_ctrl src/viman_key_ctrl.cpp src/viman.cpp)
 target_link_libraries(viman_key_ctrl ${catkin_LIBRARIES})
 
-#### ROS Node for semi-autonomous operation ####
-add_executable(viman_sa src/viman_sa.cpp src/vm_pid.cpp src/viman.cpp
-				include/viman_sa.h include/vm_pid.h include/viman.h)
+#### ROS node for semi-autonomous operation ####
+add_executable(viman_sa src/viman_sa.cpp src/vm_pid.cpp src/viman.cpp)
 target_link_libraries(viman_sa ${catkin_LIBRARIES})
 
-install(DIRECTORY include plugins src
+#### Utility ROS node to observe sensor data (except camera) ####
+add_executable(vm_sensor_data src/utility/vm_sensor_data.cpp)
+target_link_libraries(vm_sensor_data ${catkin_LIBRARIES})
+
+install(DIRECTORY include include/plugin include/utility plugins src src/plugin src/utility
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})

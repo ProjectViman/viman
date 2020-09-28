@@ -9,6 +9,9 @@
   <xacro:property name="altimeter_origin_offset" value="0 0 0.015"/>
   <xacro:property name="altimeter_dimensions" value="0.005 0.005 0.002"/>
   
+  <xacro:property name="imu_origin_offset" value="0 0 0.017"/>
+  <xacro:property name="imu_dimensions" value="0.005 0.005 0.002"/>
+  
   <!-- Macro to define propeller links -->
   <!-- Input parameters: propeller ID, pose of the joint, xyz of CoM -->
   <xacro:macro name="propeller_link" params="id com xyz rpy">        
@@ -115,6 +118,90 @@
   <xacro:propeller_link id="3" com="-2.7756E-17 -0.00027271 0" xyz="0.085003 0.084703 0.0335" rpy="1.5708 0 1.1739"/>
   <xacro:propeller_link id="4" com="2.7756E-17 -0.00027271 2.7756E-17" xyz="-0.084703 0.085003 0.0335" rpy="1.5708 0 2.5345"/>
   
+  <link name="altimeter">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+		<box size="${altimeter_dimensions}"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+    <box size="${altimeter_dimensions}"/>
+      </geometry>
+      <material name="blue"/>
+    </visual>
+    <inertial>
+      <mass value="1e-5" />
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
+    </inertial>
+  </link> 
+  <joint name="altimeter_joint" type="fixed">
+    <origin xyz="${altimeter_origin_offset}" rpy="0 0 0"/>
+    <parent link="base_link"/>
+    <child link="altimeter"/>
+  </joint>
+  <gazebo reference="altimeter">
+	<material>Gazebo/SkyBlue</material>
+  </gazebo>
+  
+  <link name="camera">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+		<box size="${camera_dimensions}"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+    <box size="${camera_dimensions}"/>
+      </geometry>
+      <material name="red"/>
+    </visual>
+    <inertial>
+      <mass value="1e-5" />
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
+    </inertial>
+  </link> 
+  <joint name="camera_joint" type="fixed">
+    <origin xyz="${cam_origin_offset}" rpy="0 0 -1.5708"/>
+    <parent link="base_link"/>
+    <child link="camera"/>
+  </joint>
+  
+  <link name="imu_link">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+		<box size="${imu_dimensions}"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+		<box size="${imu_dimensions}"/>
+      </geometry>
+    </visual>
+    <inertial>
+      <mass value="1e-5" />
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
+    </inertial>
+  </link> 
+  <joint name="imu_joint" type="fixed">
+    <origin xyz="${imu_origin_offset}" rpy="0 0 0"/>
+    <parent link="base_link"/>
+    <child link="imu_link"/>
+  </joint>
+  <gazebo reference="imu_link">
+	<material>Gazebo/Purple</material>
+  </gazebo>
+  
+  
   <!-- Flight plugin -->
   <gazebo>
     <plugin name='viman_flight' filename='libplugin_viman_flight.so'>
@@ -146,33 +233,7 @@
     </plugin> 
   </gazebo>
     
-  <link name="camera">
-    <collision>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <geometry>
-		<box size="${camera_dimensions}"/>
-      </geometry>
-    </collision>
-    <visual>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <geometry>
-    <box size="${camera_dimensions}"/>
-      </geometry>
-      <material name="red"/>
-    </visual>
-    <inertial>
-      <mass value="1e-5" />
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
-    </inertial>
-  </link> 
-  <joint name="camera_joint" type="fixed">
-    <origin xyz="${cam_origin_offset}" rpy="0 0 -1.5708"/>
-    <parent link="base_link"/>
-    <child link="camera"/>
-  </joint>
-  
-  <!-- Camera: Plugin -->
+  <!-- Camera: plugin -->
   <gazebo reference="camera">
 	<material>Gazebo/Red</material>  
     <sensor type="camera" name="viman_frnt_cam">
@@ -214,35 +275,6 @@
     </sensor>
   </gazebo>
  
-  <link name="altimeter">
-    <collision>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <geometry>
-		<box size="${altimeter_dimensions}"/>
-      </geometry>
-    </collision>
-    <visual>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <geometry>
-    <box size="${altimeter_dimensions}"/>
-      </geometry>
-      <material name="blue"/>
-    </visual>
-    <inertial>
-      <mass value="1e-5" />
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
-    </inertial>
-  </link> 
-  <joint name="altimeter_joint" type="fixed">
-    <origin xyz="${altimeter_origin_offset}" rpy="0 0 0"/>
-    <parent link="base_link"/>
-    <child link="altimeter"/>
-  </joint>
-  <gazebo reference="altimeter">
-	<material>Gazebo/SkyBlue</material>
-  </gazebo>
-  
   <!-- Altimeter plugin -->
   <gazebo>
 	  <plugin name='altimeter_plugin' filename='libplugin_altimeter.so'>
@@ -252,6 +284,40 @@
 		<noise>0.01</noise>
 	  </plugin>
   </gazebo>
+  
+  <!-- IMU plugin 
+  <gazebo reference="imu_link">
+    <gravity>true</gravity>
+    <sensor name="imu_sensor" type="imu">
+      <always_on>true</always_on>
+      <update_rate>100</update_rate>
+      <visualize>true</visualize>
+      <topic>/viman/imu</topic>
+      <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
+        <topicName>imu</topicName>
+        <bodyName>imu_link</bodyName>
+        <updateRateHZ>10.0</updateRateHZ>
+        <gaussianNoise>0.0</gaussianNoise>
+        <xyzOffset>0 0 0</xyzOffset>
+        <rpyOffset>0 0 0</rpyOffset>
+        <frameName>imu_link</frameName>
+        <initialOrientationAsReference>false</initialOrientationAsReference>
+      </plugin>
+      <pose>0 0 0 0 0 0</pose>
+    </sensor>
+  </gazebo>-->
+  
+  <gazebo>
+    <plugin name="imu_plugin" filename="libgazebo_ros_imu.so">
+      <alwaysOn>true</alwaysOn>
+      <bodyName>imu_link</bodyName>
+      <topicName>/viman/imu</topicName>
+      <serviceName>imu_service</serviceName>
+      <gaussianNoise>0.0</gaussianNoise>
+      <updateRate>20.0</updateRate>
+    </plugin>
+  </gazebo>
+  
   
 </robot>
 

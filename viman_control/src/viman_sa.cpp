@@ -28,7 +28,7 @@ void read_input(void){
 		switch(input){
 			case 'x': do_not_quit = false;
 					  break;
-			case 'h': display_help();
+			case 'z': display_help();
 					  break;
 			
 			// Take off and Land
@@ -38,36 +38,69 @@ void read_input(void){
 			
 			// Stop all
 			case 's': vm.allStop();
-					  for(int i=0;i<4;i++){
+					  for(int i=0;i<3;i++){
 						 set_points[i] = 0;
 					  }
-					  ROS_INFO("Set height: %f",set_points[0]);
+					  ROS_INFO("Set height: %f",set_points[2]);
 					  break;
 					  
-			// Up and down
-			case 'q': set_points[0] += 0.1;
-					  ROS_INFO("Set height: %f",set_points[0]);
+			// Height (z) +-
+			case 'q': set_points[2] += 0.1;
+					  ROS_INFO("Set height: %f",set_points[2]);
 					  break;
-			case 'w': set_points[0] -= 0.1;
-					  ROS_INFO("Set height: %f",set_points[0]);
+			case 'w': set_points[2] -= 0.1;
+					  ROS_INFO("Set height: %f",set_points[2]);
 					  break;
 			
 			// Setting height
-			case 'S': std::cout << "\nEnter height to hover (m): ";
-					  std::cin >> set_points[0];
+			case 'h': std::cout << "\nEnter height to hover (m): ";
+					  std::cin >> set_points[2];
 					  break;
 			
-			// Set PID gains
-			case 'p': 
+			// Set height PID gains
+			case 'H': 
 					  isPidRunning = false;
-					  std::cout << "\nEnter P gain: ";
+					  std::cout << "\nEnter height P gain: ";
 					  std::cin >> height_controller_.gain_p;
-					  std::cout << "Enter I gain: ";
+					  std::cout << "Enter height I gain: ";
 					  std::cin >> height_controller_.gain_i;
-					  std::cout << "Enter D gain: ";
+					  std::cout << "Enter height D gain: ";
 					  std::cin >> height_controller_.gain_d;
 					  height_controller_.reset();
 					  isPidRunning = true;
+					  break;
+			
+			// Yaw +-
+			case 'u': set_orient.yaw += 10;
+					  if(set_orient.yaw >= 180.01){
+						set_orient.yaw = -(360 - set_orient.yaw);
+					  }
+					  ROS_INFO("Set yaw: %f",set_orient.yaw);
+					  break;
+			case 'o': set_orient.yaw -= 10;
+					  if(set_orient.yaw <= -179.9){
+						set_orient.yaw = 180;
+					  }
+					  ROS_INFO("Set yaw: %f",set_orient.yaw);
+					  break;
+					  
+			// Setting yaw
+			case 'y': std::cout << "\nEnter angle (-180,180] (deg): ";
+					  std::cin >> set_orient.yaw;
+					  break;
+					  
+			// Set yaw PID gains
+			case 'Y': 
+					  isPidRunning = false;
+					  std::cout << "\nEnter yaw P gain: ";
+					  std::cin >> yaw_controller_.gain_p;
+					  std::cout << "Enter yaw I gain: ";
+					  std::cin >> yaw_controller_.gain_i;
+					  std::cout << "Enter yaw D gain: ";
+					  std::cin >> yaw_controller_.gain_d;
+					  yaw_controller_.reset();
+					  isPidRunning = true;
+					  break;
 		}		
 	}
 }
@@ -76,11 +109,15 @@ void display_help(void){
 	std::cout << "\nUse the following commands: "<< std::endl
 			<< "t: Take off/Land (cmds work iff VIMAN has taken off)" << std::endl
 			<< "s: Stop all" << std::endl
-			<< "S: Set VIMAN at height" << std::endl
+			<< "h: Set height (m)" << std::endl
+			<< "y: Set yaw angle (deg)" << std::endl
 			<< "q: Increase height by 0.1 m" << std::endl
 			<< "w: Decrease height by 0.1 m" << std::endl
-			<< "p: Set PID gains" << std::endl
-			<< "h: Display help" << std::endl
+			<< "u: Counter-clockwise yaw by 10 deg" << std::endl
+			<< "o: Clockwise yaw by 10 deg" << std::endl
+			<< "H: Set height PID gains" << std::endl
+			<< "Y: Set yaw PID gains" << std::endl
+			<< "z: Display help" << std::endl
 			<< "x: Quit\n" << std::endl;
 }
 
@@ -89,20 +126,30 @@ int main(int argc, char **argv){
 	ros::init(argc,argv,"viman_semiAuto");
 	ros::NodeHandle node;
 	
-	ros::Subscriber height_subs_ = node.subscribe("/viman/height",100,HeightCallbck);
+	ros::Subscriber height_subs_ = node.subscribe("/viman/height",500,HeightCallbck);
+	ros::Subscriber imu_subs_ = node.subscribe("/viman/imu",500,ImuCallbck);
 	
 	vm = Viman(node);
 	height_controller_ = VmPID();
+	yaw_controller_ = VmPID();
 	
 	height_controller_.gain_p = 1.5;
 	height_controller_.gain_i = 0.02;
 	height_controller_.gain_d = 0.01;
+	
+	yaw_controller_.gain_p = 1.5;
+	yaw_controller_.gain_i = 0.02;
+	yaw_controller_.gain_d = 0.01;
 	
 	display_help();
     if( height_subs_.getTopic() != "")
         ROS_INFO("found altimeter height topic");
     else
         ROS_INFO("cannot find altimeter height topic!");
+    if( imu_subs_.getTopic() != "")
+        ROS_INFO("found imu topic");
+    else
+        ROS_INFO("cannot find imu topic!");
         
     isPidRunning = false;
     
@@ -124,10 +171,10 @@ int main(int argc, char **argv){
 			
 			if(dt <= 0 ) continue;
 			
-			cmd_values[0] = height_controller_.update(set_points[0], sensor_values[0], 
+			cmd_values[2] = height_controller_.update(set_points[2], position[2], 
 									  dt);
 			
-			vm.move(cmd_values[1],cmd_values[2],cmd_values[0]);
+			vm.move(cmd_values[0],cmd_values[1],cmd_values[2]);
 			
 			prev_time = cur_time;			
 		}
@@ -139,5 +186,10 @@ int main(int argc, char **argv){
 }
 
 void HeightCallbck(const geometry_msgs::PointStamped& height_){
-	sensor_values[0] = height_.point.z;
+	position[2] = height_.point.z;
+}
+
+void ImuCallbck(const sensor_msgs::Imu& imu_){
+	cur_orient = get_cardan_angles(imu_.orientation.x, imu_.orientation.y,
+								   imu_.orientation.z, imu_.orientation.w);
 }

@@ -2,7 +2,8 @@
 #define VIMAN_SA
 
 #include "viman.h"
-#include "vm_pid.h"
+#include "vm_pid_linear.h"
+#include "vm_pid_rotate.h"
 #include "imumath_brief.h"
 
 #include <geometry_msgs/PointStamped.h>
@@ -18,8 +19,10 @@
 #define MAX_LINEAR_Z 2
 #define MAX_YAW 2.5
 
+ #define USE_NEG_ANGLE // Uncomment this if you want to use angle range (-180,180]
+
 // Store setpoints
-float set_points[3];				// x,y,z
+double set_points[3];				// x,y,z
 Cardan set_orient;					// set orientation
 
 // Store velocity commands
@@ -33,8 +36,8 @@ Cardan cur_orient;					// current orientation
 Viman vm;
 
 // Controller and related
-VmPID height_controller_;
-VmPID yaw_controller_;
+VmPidLinear height_controller_;
+VmPidRotate yaw_controller_;
 bool isPidRunning;
 
 // Vars to read user cmds

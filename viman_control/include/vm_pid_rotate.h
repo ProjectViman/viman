@@ -1,18 +1,19 @@
-#ifndef VM_PID_H
-#define VM_PID_H
+#ifndef VM_PID_ROTATE_H
+#define VM_PID_ROTATE_H
 
 #include <cmath>
+#include <iostream>
 
 /**
- * @brief PID controller class for VIMAN.
+ * @brief PID controller class for rotational motion of VIMAN.
  */
 
-class VmPID {
+class VmPidRotate {
 protected:
-	float f_round(float f, int decimals);
+	double f_round(double f, int decimals);
 
 public:
-  VmPID();
+  VmPidRotate();
 
   double gain_p;
   double gain_i;
@@ -27,4 +28,4 @@ public:
   void reset();
 };
 
-#endif // VM_PID_H
+#endif // VM_PID_ROTATE_H

@@ -36,7 +36,8 @@ public:
     // Functions to control viman state
 	void toggle_ready(void);
 	void allStop(void);
-	void move(float, float, float);
+	void move(float speed_x, float speed_y, float speed_z, float speed_yaw);
+	void move(float speed_x, float speed_y, float speed_z);
 	void yaw(float);
     
 };

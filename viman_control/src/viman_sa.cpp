@@ -72,15 +72,27 @@ void read_input(void){
 			
 			// Yaw +-
 			case 'u': set_orient.yaw += 10;
-					  if(set_orient.yaw >= 180.01){
-						set_orient.yaw = -(360 - set_orient.yaw);
-					  }
+					  #ifdef USE_NEG_ANGLE
+						if(set_orient.yaw >= 180.01){
+							set_orient.yaw = -(360 - set_orient.yaw);
+						}
+					  #else
+						if(set_orient.yaw >= 360){
+							set_orient.yaw = 360 - set_orient.yaw;
+						}
+					  #endif
 					  ROS_INFO("Set yaw: %f",set_orient.yaw);
 					  break;
 			case 'o': set_orient.yaw -= 10;
-					  if(set_orient.yaw <= -179.9){
-						set_orient.yaw = 180;
-					  }
+					  #ifdef USE_NEG_ANGLE
+						  if(set_orient.yaw <= -179.9){
+							set_orient.yaw = 180;
+						  }
+					  #else
+						if(set_orient.yaw < 0){
+							set_orient.yaw = 360 + set_orient.yaw;
+						}
+					  #endif
 					  ROS_INFO("Set yaw: %f",set_orient.yaw);
 					  break;
 					  
@@ -130,16 +142,17 @@ int main(int argc, char **argv){
 	ros::Subscriber imu_subs_ = node.subscribe("/viman/imu",500,ImuCallbck);
 	
 	vm = Viman(node);
-	height_controller_ = VmPID();
-	yaw_controller_ = VmPID();
+	height_controller_ = VmPidLinear();
+	yaw_controller_ = VmPidRotate();
 	
-	height_controller_.gain_p = 1.5;
-	height_controller_.gain_i = 0.02;
-	height_controller_.gain_d = 0.01;
+	height_controller_.gain_p = 2;
+	height_controller_.gain_i = 0.1;
+	height_controller_.gain_d = 0.03;
 	
-	yaw_controller_.gain_p = 1.5;
-	yaw_controller_.gain_i = 0.02;
-	yaw_controller_.gain_d = 0.01;
+	yaw_controller_.gain_p = 0.6;
+	yaw_controller_.gain_i = 0.1;
+	yaw_controller_.gain_d = 0.4;
+	yaw_controller_.sp_range = 0.3;
 	
 	display_help();
     if( height_subs_.getTopic() != "")
@@ -163,6 +176,9 @@ int main(int argc, char **argv){
 	double cur_time;
 	double dt;
 		
+	set_points[2] = 0.5;
+	set_orient.yaw = 0;
+		
 	while(do_not_quit && ros::ok()){
 		if(isPidRunning){
 			cur_time = ros::Time::now().toSec();
@@ -173,8 +189,10 @@ int main(int argc, char **argv){
 			
 			cmd_values[2] = height_controller_.update(set_points[2], position[2], 
 									  dt);
+									  
+			cmd_values[3] = yaw_controller_.update(set_orient.yaw, cur_orient.yaw, dt);
 			
-			vm.move(cmd_values[0],cmd_values[1],cmd_values[2]);
+			vm.move(cmd_values[0],cmd_values[1],cmd_values[2],cmd_values[3]);
 			
 			prev_time = cur_time;			
 		}
@@ -192,4 +210,11 @@ void HeightCallbck(const geometry_msgs::PointStamped& height_){
 void ImuCallbck(const sensor_msgs::Imu& imu_){
 	cur_orient = get_cardan_angles(imu_.orientation.x, imu_.orientation.y,
 								   imu_.orientation.z, imu_.orientation.w);
+	
+	#ifndef USE_NEG_ANGLE
+		// converting to positive angle [0,360)
+		if(cur_orient.pitch < 0) cur_orient.pitch += 360;
+		if(cur_orient.roll < 0) cur_orient.roll += 360;
+		if(cur_orient.yaw < 0) cur_orient.yaw += 360;
+	#endif
 }

@@ -101,7 +101,7 @@ void Altimeter::Update(){
 	// remove zero error
 	height -= zero_err_;
 	
-    height_.header.stamp = ros::Time(sim_time.sec, sim_time.nsec);
+    height_.header.stamp = ros::Time::now();
     height_.point.z = height;
     altimeter_publisher_.publish(height_);
 }

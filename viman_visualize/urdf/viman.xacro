@@ -281,7 +281,7 @@
 		<bodyName>altimeter</bodyName>
 		<frameId>altimeter</frameId>
 		<altimeterTopicName>/viman/height</altimeterTopicName>
-		<noise>0.01</noise>
+		<noise>0.0</noise>
 	  </plugin>
   </gazebo>
   

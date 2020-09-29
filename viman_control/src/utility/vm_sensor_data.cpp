@@ -7,6 +7,7 @@
 // If set displays quaternion read by IMU
 #define SHOW_QUAT 0
 
+
 Quaternion q;
 Cardan angles;
 double height;

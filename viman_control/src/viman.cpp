@@ -54,6 +54,19 @@ void Viman::move(float speed_x, float speed_y, float speed_z){
     pubCmd.publish(twist_msg);
 }
 
+void Viman::move(float speed_x, float speed_y, float speed_z, float speed_yaw){
+    if (!isFlying)
+		return;
+     
+    twist_msg.linear.x = speed_x;
+    twist_msg.linear.y = speed_y;
+    twist_msg.linear.z = speed_z;
+    twist_msg.angular.x = sgn(speed_y)*0.05;
+    twist_msg.angular.y = sgn(speed_x)*0.05;
+    twist_msg.angular.z = speed_yaw;
+    pubCmd.publish(twist_msg);
+}
+
 void Viman::yaw(float speed){
 	if (!isFlying)
 		return;

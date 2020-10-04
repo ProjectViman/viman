@@ -70,12 +70,12 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        base_link:
+        camera:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        camera:
+        imu_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -96,6 +96,11 @@ Visualization Manager:
           Show Trail: false
           Value: true
         propeller_4:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        viman_base_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -124,7 +129,7 @@ Visualization Manager:
   Global Options:
     Background Color: 48; 48; 48
     Default Light: true
-    Fixed Frame: base_link
+    Fixed Frame: viman_base_link
     Frame Rate: 30
   Name: root
   Tools:

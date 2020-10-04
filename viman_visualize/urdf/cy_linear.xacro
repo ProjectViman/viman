@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot name="only_linear" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  
+  <!-- Macro to define levels links -->
+  <!-- Input parameters: level number, xyz of CoM -->
+  <xacro:macro name="level" params="num xyz">        
+        
+    <link name="cy_linear_l${num}">
+		<inertial>
+			<origin
+				xyz="0 0.2 0"
+				rpy="0 0 0" />
+			  <mass
+				value="98.282" />
+			  <inertia
+				ixx="13.352"
+				ixy="-9.4023E-31"
+				ixz="-2.1857E-30"
+				iyy="24.084"
+				iyz="2.1192E-31"
+				izz="13.352" />
+			</inertial>
+		<visual>
+		  <origin
+			xyz="0 0 0"
+			rpy="0 0 0" />
+		  <geometry>
+			<mesh
+			filename="package://viman_visualize/meshes/cy_linear.STL" />
+		  </geometry>
+		</visual>
+		<collision>
+		  <origin
+			xyz="0 0 0"
+			rpy="0 0 0" />
+		  <geometry>
+			<mesh
+			filename="package://viman_visualize/meshes/cy_linear.STL" />
+		  </geometry>
+		</collision>              
+    </link>
+        
+    <joint name="cy_linear_l${num}_joint" type="fixed">
+        <parent link="cy_linear_l0"/>
+        <child link="cy_linear_l${num}"/>
+        <origin rpy="0 0 0" xyz="${xyz}"/>
+        <axis xyz="0 1 0" />
+    </joint>
+                    
+  </xacro:macro>   
+	
+  <link name="cy_linear_l0">
+    <inertial>
+      <origin
+        xyz="0 0.2 0"
+        rpy="0 0 0" />
+      <mass
+        value="98.282" />
+      <inertia
+        ixx="13.352"
+        ixy="-9.4023E-31"
+        ixz="-2.1857E-30"
+        iyy="24.084"
+        iyz="2.1192E-31"
+        izz="13.352" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://viman_visualize/meshes/cy_linear.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.64706 0.61961 0.58824 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://viman_visualize/meshes/cy_linear.STL" />
+      </geometry>
+    </collision>
+  </link>
+  
+  <xacro:level num="1" xyz="0 0 0.4"/>
+  <xacro:level num="2" xyz="0 0 0.8"/>
+  <xacro:level num="3" xyz="0 0 1.2"/>
+  <xacro:level num="4" xyz="0 0 1.6"/> 
+  
+  <gazebo reference="cy_linear_l0">
+	<material>Gazebo/Green</material>
+  </gazebo>
+  
+  <gazebo reference="cy_linear_l1">
+	<material>Gazebo/Red</material>
+  </gazebo>
+  
+  <gazebo reference="cy_linear_l2">
+	<material>Gazebo/Purple</material>
+  </gazebo>
+  
+  <gazebo reference="cy_linear_l3">
+	<material>Gazebo/Blue</material>
+  </gazebo>
+  
+  <gazebo reference="cy_linear_l4">
+	<material>Gazebo/Yellow</material>
+  </gazebo>
+
+</robot>

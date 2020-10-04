@@ -3,6 +3,7 @@
 <launch>
 	<arg name="on_rviz" default="false"/>
 	<arg name="model_name" default="viman"/>
+	<arg name="nav" default="0"/>				<!-- 0: normal | 1: z linear -->
 	
 	<arg name="rvizconfig" 
 		value="$(find viman_visualize)/config/flight_mode.rviz" />
@@ -12,6 +13,7 @@
 	<arg name="paused" value="true"/>
 	<arg name="use_sim_time" value="true"/>
 	<arg name="world" value="$(find viman_visualize)/worlds/open_sky.world"/>
+	
 	<!-- Launching the world -->
 	<include file="$(find gazebo_ros)/launch/empty_world.launch">
 		<arg name="world_name" value="$(arg world)"/>
@@ -40,4 +42,16 @@
 		args="-d $(arg rvizconfig)"
 		if="$(arg on_rviz)"/>
 	
+	<group if = "$(eval arg('nav')==1)">
+		<param name="cy_linear_desc" 
+		 command="$(find xacro)/xacro $(find viman_visualize)/urdf/cy_linear.xacro"/>
+	
+		<node name="cy_linear_spawner" 
+			pkg="gazebo_ros"
+			type="spawn_model" 
+			respawn="false"
+			output="screen"
+			args="-urdf -model cy_linear -param cy_linear_desc"
+		/>
+	</group>
 </launch>

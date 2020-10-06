@@ -24,6 +24,7 @@ In order to incorporate autonomy into our UAV, the following milestones are to b
 3. Camera
 
 ## About the repository
+
 This repository contains two ROS packages:
  1. [viman_control][1]: Contains plugins to simulate the quadcopter, sensors, and ROS nodes to test and process vision and implement control algorithms.
  2. [viman_visualize][2]: Contains 3D models that build a Gazebo environment and the model of the quadcopter itself.

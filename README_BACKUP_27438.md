@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # VIMAN - VIrtual Manual and Autonomous Navigation
 
 With Project VIMAN, we aim to build a quadcopter capable of maneuvering in autonomous mode with the ability to detect people having high body temperature in a crowded area. This capability could be used to churn out potential CoVID-19 infected people from a crowd.
@@ -24,6 +25,11 @@ In order to incorporate autonomy into our UAV, the following milestones are to b
 3. Camera
 
 ## About the repository
+=======
+
+## VIMAN - VIrtual Manual and Autonomous Navigation
+>>>>>>> fa9864b86b393ab876439ed23877169003ef6f08
+
 This repository contains two ROS packages:
  1. [viman_control][1]: Contains plugins to simulate the quadcopter, sensors, and ROS nodes to test and process vision and implement control algorithms.
  2. [viman_visualize][2]: Contains 3D models that build a Gazebo environment and the model of the quadcopter itself.
@@ -32,9 +38,13 @@ This repository contains two ROS packages:
 
 ![UAV - VIMAN](https://github.com/AuntyVIEW/viman/blob/master/viman_visualize/multimedia/open_sky_1.jpg)
 
+<<<<<<< HEAD
 ## Implementation
 
 ### 0 | Control via keyboard
+=======
+### For manual operation
+>>>>>>> fa9864b86b393ab876439ed23877169003ef6f08
 Step 1: Execute the following command in terminal to launch the Gazebo world with *viman*.
 ```
 roslaunch viman_visualize display-gazebo.launch on_rviz:=true
@@ -45,9 +55,13 @@ rosrun viman_control viman_key_ctrl
 ```
 Step 3: Play the simulation in Gazebo, place the focus of the terminal opened in step 2 and read the instructions provided by the ROS node.
 
+<<<<<<< HEAD
 ---
 ### 1 | SLAM Z
 #### 1.1 & 1.2 | Hover at a height with a set heading 
+=======
+### For semi-autonomous operation
+>>>>>>> fa9864b86b393ab876439ed23877169003ef6f08
 Step 1: Execute the following command in terminal to launch the Gazebo world with *viman*.
 ```
 roslaunch viman_visualize display-gazebo.launch on_rviz:=true
@@ -64,6 +78,7 @@ Step 3: Play the simulation in Gazebo, place the focus of the terminal opened in
 rosrun viman_control vm_sensor_data
 ```
 
+<<<<<<< HEAD
 ### To find HSV range for color thresholding
 Make use the following `DisplayImg` class in `vision_process.py`
 ```
@@ -94,6 +109,8 @@ class DisplayImg(threading.Thread):
 ```
 ![Color-Thresholding](https://github.com/AuntyVIEW/viman/blob/master/viman_visualize/multimedia/thresholding.png)
 
+=======
+>>>>>>> fa9864b86b393ab876439ed23877169003ef6f08
 ### roslaunch parameters
 Note: Parameter values in **bold** correspond to default value.
 

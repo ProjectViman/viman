@@ -1,8 +1,8 @@
 <package format="2">
   <name>viman_control</name>
-  <version>0.1.1</version>
+  <version>0.1.1/version>
 
-  <description>This package contains the control plugins required to simulate UAV-Viman.</description>
+  <description>This package contains the control plugins and nodes required to simulate UAV-Viman.</description>
   <author email="mehta.mayank860@gmail.com">Mayank N. Mehta</author>
 
   <maintainer email="mehta.mayank860@gmail.com">Mayank N. Mehta</maintainer>

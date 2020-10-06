@@ -26,7 +26,7 @@ if (PKG_CONFIG_FOUND)
 endif()
 
 link_directories(${GAZEBO_LIBRARY_DIRS} ${Boost_LIBRARIES} ${PROTOBUF_LIBRARIES} ${OGRE_LIBRARY_DIRS})
-include_directories(${OpenCV_INCLUDE_DIR} 
+include_directories( 
                     ${Boost_INCLUDE_DIR}
                     ${catkin_INCLUDE_DIRS}
                     ${GAZEBO_INCLUDE_DIRS}
@@ -95,3 +95,8 @@ target_link_libraries(vm_sensor_data ${catkin_LIBRARIES})
 
 install(DIRECTORY include include/plugin include/utility plugins src src/plugin src/utility
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
+
+catkin_install_python(PROGRAMS 
+	scripts/frnt_vision.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)

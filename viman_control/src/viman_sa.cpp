@@ -70,6 +70,10 @@ void read_input(void){
 					  isPidRunning = true;
 					  break;
 			
+			// reset height PID
+			case 'P': height_controller_.reset();
+					  break;
+			
 			// Yaw +-
 			case 'u': set_orient.yaw += 10;
 					  #ifdef USE_NEG_ANGLE
@@ -129,6 +133,7 @@ void display_help(void){
 			<< "o: Clockwise yaw by 10 deg" << std::endl
 			<< "H: Set height PID gains" << std::endl
 			<< "Y: Set yaw PID gains" << std::endl
+			<< "P: Reset height PID" << std::endl
 			<< "z: Display help" << std::endl
 			<< "x: Quit\n" << std::endl;
 }

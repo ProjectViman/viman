@@ -236,41 +236,37 @@
   <!-- Camera: plugin -->
   <gazebo reference="camera">
 	<material>Gazebo/Red</material>  
-    <sensor type="camera" name="viman_frnt_cam">
+    <sensor type="camera" name="vm_frnt_cam">
       <update_rate>30.0</update_rate>
-      <camera name="viman_frnt_cam">
-        <horizontal_fov>1.3962634</horizontal_fov>
+      <camera name="vm_frnt_cam">
+        <horizontal_fov>1.3</horizontal_fov>
         <image>
-          <width>800</width>
-          <height>800</height>
-          <format>R8G8B8</format>
+          <width>640</width>
+          <height>480</height>
         </image>
         <clip>
-          <near>0.02</near>
-          <far>300</far>
+          <near>0.1</near>
+          <far>30</far>
         </clip>
         <noise>
           <type>gaussian</type>
-          <!-- Noise is sampled independently per pixel on each frame.
-               That pixel's noise value is added to each of its color
-               channels, which at that point lie in the range [0,1]. -->
           <mean>0.0</mean>
           <stddev>0.007</stddev>
         </noise>
       </camera>
       <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
         <alwaysOn>true</alwaysOn>
-        <updateRate>0.0</updateRate>
-        <cameraName>viman_frnt_cam</cameraName>
-        <imageTopicName>viman_frnt_camera_out</imageTopicName>
-        <cameraInfoTopicName>viman_frnt_cam_info</cameraInfoTopicName>
+        <updateRate>30.0</updateRate>
+        <cameraName>vm_frnt_cam</cameraName>
+        <imageTopicName>image</imageTopicName>
+        <cameraInfoTopicName>vm_frnt_cam_info</cameraInfoTopicName>
         <frameName>camera_link</frameName>
         <hackBaseline>0.07</hackBaseline>
-        <distortionK1>0.0</distortionK1>
-        <distortionK2>0.0</distortionK2>
-        <distortionK3>0.0</distortionK3>
-        <distortionT1>0.0</distortionT1>
-        <distortionT2>0.0</distortionT2>
+        <distortionK1>0.01</distortionK1>
+        <distortionK2>0.02</distortionK2>
+        <distortionK3>0.01</distortionK3>
+        <distortionT1>0.03</distortionT1>
+        <distortionT2>0.04</distortionT2>
       </plugin>
     </sensor>
   </gazebo>
@@ -284,29 +280,7 @@
 		<noise>0.0</noise>
 	  </plugin>
   </gazebo>
-  
-  <!-- IMU plugin 
-  <gazebo reference="imu_link">
-    <gravity>true</gravity>
-    <sensor name="imu_sensor" type="imu">
-      <always_on>true</always_on>
-      <update_rate>100</update_rate>
-      <visualize>true</visualize>
-      <topic>/viman/imu</topic>
-      <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
-        <topicName>imu</topicName>
-        <bodyName>imu_link</bodyName>
-        <updateRateHZ>10.0</updateRateHZ>
-        <gaussianNoise>0.0</gaussianNoise>
-        <xyzOffset>0 0 0</xyzOffset>
-        <rpyOffset>0 0 0</rpyOffset>
-        <frameName>imu_link</frameName>
-        <initialOrientationAsReference>false</initialOrientationAsReference>
-      </plugin>
-      <pose>0 0 0 0 0 0</pose>
-    </sensor>
-  </gazebo>-->
-  
+    
   <gazebo>
     <plugin name="imu_plugin" filename="libgazebo_ros_imu.so">
       <alwaysOn>true</alwaysOn>

@@ -10,6 +10,7 @@ In order to incorporate autonomy into our UAV, the following milestones are to b
   - - [ ] Linear-Z mapping (Stage 1.3)
     - - [x] Camera calibration (1.3.0)
     - - [x] Color thresholding (1.3.1)
+    - - [x] Color identification (1.3.2)
   - - [ ] Rotation-Z mapping (Stage 1.4)
   - - [ ] Z mapping (Stage 1.5)
 - - [ ] SLAM X (Stage 2)
@@ -27,8 +28,9 @@ In order to incorporate autonomy into our UAV, the following milestones are to b
 This repository contains two ROS packages:
  1. [viman_control][1]: Contains plugins to simulate the quadcopter, sensors, and ROS nodes to test and process vision and implement control algorithms.
  2. [viman_visualize][2]: Contains 3D models that build a Gazebo environment and the model of the quadcopter itself.
+ 3. [viman_utility][3]: Contains utility nodes and custom messages to ease the development and control of VIMAN.
 
-> Note: Make sure you have ROS' `cv_bridge` because OpenCV with Python3 has been used for vision processing.
+> Note: Make sure you have ROS' `cv_bridge` because OpenCV 3.2 with Python2.7 has been used for vision processing.
 
 ![UAV - VIMAN](https://github.com/AuntyVIEW/viman/blob/master/viman_visualize/multimedia/open_sky_1.jpg)
 
@@ -63,34 +65,26 @@ Step 3: Play the simulation in Gazebo, place the focus of the terminal opened in
 ```
 rosrun viman_control vm_sensor_data
 ```
-
-### To find HSV range for color thresholding
-Make use the following `DisplayImg` class in `vision_process.py`
+### To view camera output (SLAM Z)
 ```
-class DisplayImg(threading.Thread):
-	
-	def __init__(self):
-		threading.Thread.__init__(self)
-		self.th_findThresh = FindThresholds()
-		self.stop_process = False
-	
-	def run(self):
-		self.th_findThresh.start()
-		while not self.stop_process:
-			Output.lock.acquire()
-			try:
-				Output.lock.wait(0.1)
-				self.th_findThresh.img = Output.img
-				cv2.imshow("Front camera vision", Output.img)
-				cv2.waitKey(1)
-			except:
-				print('some issue')
-			finally:
-				Output.lock.release()
-		self.th_findThresh.stop_process = True
-		self.th_findThresh.join()
-		cv2.destroyAllWindows()
-		print('Processing ended..')
+rosrun viman_control frnt_vision.py
+```
+### To view the color identified by the camera (SLAM Z)
+```
+rostopic echo /viman/color_id
+```
+
+### To find HSV color ranges for color thresholding
+Make use the following changes in `frnt_vision.py`
+```
+...
+from vision_process import DisplayImg, Output # For HSV thresholding
+...
+...
+...
+th_processing = DisplayImg() # For HSV thresholding
+...
+...
 ```
 ![Color-Thresholding](https://github.com/AuntyVIEW/viman/blob/master/viman_visualize/multimedia/thresholding.png)
 
@@ -106,3 +100,4 @@ Note: Parameter values in **bold** correspond to default value.
 
 [1]:https://github.com/AuntyVIEW/viman/tree/master/viman_control
 [2]:https://github.com/AuntyVIEW/viman/tree/master/viman_visualize
+[3]:https://github.com/AuntyVIEW/viman/tree/master/viman_utility

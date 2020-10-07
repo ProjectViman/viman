@@ -49,6 +49,7 @@ void read_input(void){
 					  ROS_INFO("Set height: %f",set_points[2]);
 					  break;
 			case 'w': set_points[2] -= 0.1;
+					  if(set_points[2] < 0) set_points[2] = 0;
 					  ROS_INFO("Set height: %f",set_points[2]);
 					  break;
 			

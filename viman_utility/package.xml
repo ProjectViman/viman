@@ -1,0 +1,24 @@
+<package format="2">
+  <name>viman_utility</name>
+  <version>0.1.1</version>
+
+  <description>This package contains custom messages and other utitlity nodes required to better simulate UAV-Viman.</description>
+  <author email="mehta.mayank860@gmail.com">Mayank N. Mehta</author>
+
+  <maintainer email="mehta.mayank860@gmail.com">Mayank N. Mehta</maintainer>
+
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>rospy</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>message_generation</build_depend>
+  
+
+  <exec_depend>roscpp</exec_depend>
+  <exec_depend>rospy</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>message_runtime</exec_depend>
+  
+</package>

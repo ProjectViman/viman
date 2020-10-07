@@ -2,8 +2,11 @@
 
 import threading
 
-import cv2
 import numpy as np
+import cv2
+
+import rospy
+from viman_utility.msg import CamZ
 
 """
 Common class where calibrated CV image matrix is stored and accessed
@@ -21,24 +24,24 @@ class DisplayImg(threading.Thread):
 	
 	def __init__(self):
 		threading.Thread.__init__(self)
-		self.th_findThresh = FindThresholds()
+		self.th_processing = FindThresholds()
 		self.stop_process = False
 	
 	def run(self):
-		self.th_findThresh.start()
+		self.th_processing.start()
 		while not self.stop_process:
 			Output.lock.acquire()
 			try:
 				Output.lock.wait(0.1)
-				self.th_findThresh.img = Output.img
+				self.th_processing.img = Output.img
 				cv2.imshow("Front camera vision", Output.img)
-				cv2.waitKey(1)
+				cv2.waitKey(2)
 			except:
 				print('some issue')
 			finally:
 				Output.lock.release()
-		self.th_findThresh.stop_process = True
-		self.th_findThresh.join()
+		self.th_processing.stop_process = True
+		self.th_processing.join()
 		cv2.destroyAllWindows()
 		print('Processing ended..')
 
@@ -53,7 +56,7 @@ class FindThresholds(threading.Thread):
 		self.high_S = 255
 		self.high_V = 255
 		self.thresh_window_name = 'Thresholding Window'
-		self.img = np.zeros((w,h,ch), np.uint8)
+		self.img = np.zeros((h,w,ch), np.uint8)
 		self.stop_process = False
 		
 	def on_low_H_thresh_trackbar(self, val):
@@ -106,7 +109,91 @@ class FindThresholds(threading.Thread):
 			cv2.imshow(self.thresh_window_name, frame_thresh)
 		cv2.destroyAllWindows()
 		print('Stopped finding thresholds...')
+
+class IdColor(threading.Thread):
+	"""
+	Define color ranges for each color. Color sequence:
+	green-red-purple-blue-yellow
+	"""
+	colors = ['green','red','purple','blue','yellow']
+	lower_limits = [(56,0,0), (0,0,0), (144,0,0), (94,127,0), (26,0,86)]
+	upper_limits = [(95,255,146), (1,255,144), (180,255,255), (124,255,255), (44,255,144)]
 	
+	def __init__(self, w=640, h=480, ch=3):
+		threading.Thread.__init__(self)
+		
+		# create a publisher to send ID-ed color
+		self.color_pub = rospy.Publisher('/viman/color_id', CamZ, queue_size=100)
+		self.colorid = CamZ()
+		
+		# default values
+		self.window_name = 'Thresholded Window'
+		self.thresh_area = 150000.0
+		self.img = np.zeros((h, w, ch), np.uint8)
+		self.masks = np.zeros((h, w, len(self.colors)), np.uint8)
+		self.stop_process = False
+	
+	def run(self):
+		kernal = np.ones((5,5), "uint8")
+		cv2.namedWindow(self.window_name)
+		while not self.stop_process:
+			Output.lock.acquire()
+			max_area = 0
+			color_idx = -1;
+			self.colorid.name = ''
+			self.colorid.area = 0
+			try:
+				Output.lock.wait(0.1)
+				self.img = Output.img
+			except:
+				print('some issue')
+			finally:
+				Output.lock.release()
+				
+			# create masks for each color, dilating to eliminate noise
+			frame_hsv = cv2.cvtColor(self.img, cv2.COLOR_BGR2HSV)
+			for count, _ in enumerate(self.colors):
+				self.masks[:,:, count] = cv2.inRange(frame_hsv,
+												self.lower_limits[count],
+												self.upper_limits[count])
+				self.masks[:,:, count] = cv2.dilate(self.masks[:,:,count],
+													kernal)
+			
+			# find contours of each color
+			for count, col_name in enumerate(self.colors):
+				_, contours, hierarchy = cv2.findContours(self.masks[:,:,count].copy(),
+														  cv2.RETR_TREE,
+														  cv2.CHAIN_APPROX_SIMPLE)
+														  
+				# get contour of maximum area of a color
+				color_max = 0
+				area = 0
+				c = None;
+				for _, contour in enumerate(contours):
+					area = cv2.contourArea(contour)
+					if (area > color_max):
+						color_max = area
+						c = contour
+						
+				# take the max area contour amongst the colors
+				if(color_max > self.thresh_area and color_max > max_area):
+					max_area = color_max
+					color_idx = count
+					
+					# draw the bounding rectangle
+					x, y, w, h = cv2.boundingRect(c)
+					self.img = cv2.rectangle(self.img, (x,y), (x+w, y+h),
+											 (0,0,0), 2)
+					self.colorid.name = col_name
+					self.colorid.area = area
+				elif(color_idx == -1 and count == len(self.colors)-1):
+					color_idx = -1
+				self.color_pub.publish(self.colorid)
+			cv2.imshow(self.window_name, self.img)
+			cv2.waitKey(1)
+		cv2.destroyAllWindows()
+		print('Stopped IDing colors...')
+
 if __name__ == '__main__':
 	print('Please run the node frnt_vision.py')
 

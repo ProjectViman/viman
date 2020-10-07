@@ -7,8 +7,7 @@ find_package(catkin REQUIRED COMPONENTS
 			 std_msgs
 			 sensor_msgs
 			 geometry_msgs
-			 image_transport
-			 message_generation)
+			 image_transport)
 
 if(CATKIN_ENABLE_TESTING)
   find_package(roslaunch REQUIRED)
@@ -97,6 +96,6 @@ install(DIRECTORY include include/plugin include/utility plugins src src/plugin 
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 
 catkin_install_python(PROGRAMS 
-	scripts/frnt_vision.py
+	scripts/frnt_vision.py scripts/vision_process.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

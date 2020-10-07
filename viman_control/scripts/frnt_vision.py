@@ -9,8 +9,7 @@ import numpy as np
 from std_msgs.msg import String
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
-
-from vision_process import DisplayImg, Output
+from vision_process import IdColor, Output
 
 """
 Coverts ROS msg into OpenCV image matrix, calibrates the image, and then
@@ -31,7 +30,7 @@ class img_calibrator:
 		self.bridge = CvBridge()
 		
 		# subscribing to ROS topic
-		self.image_sub = rospy.Subscriber("/vm_frnt_cam/image",Image,self.callback)
+		self.image_sub = rospy.Subscriber("/viman/vm_frnt_cam/image",Image,self.callback)
 		self.img_w = img_w
 		self.img_h = img_h
 		
@@ -58,18 +57,18 @@ class img_calibrator:
 
 if __name__ == '__main__':
 	ic = img_calibrator(640,480)
-	th_disp_img = DisplayImg()
+	th_processing = IdColor()
 	rospy.init_node('frnt_vision')
 	
 	# Start vision processing in the background
-	th_disp_img.daemon = True
-	th_disp_img.start()
+	th_processing.daemon = True
+	th_processing.start()
 	
 	try:
 		rospy.spin()
 	except KeyboardInterrupt:
 		print("Shutting down")
 	finally:
-		th_disp_img.stop_process = True;
-		th_disp_img.join()
+		th_processing.stop_process = True;
+		th_processing.join()
 		print("Shut down.")

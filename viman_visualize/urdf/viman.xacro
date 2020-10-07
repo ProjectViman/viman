@@ -257,7 +257,7 @@
       <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
         <alwaysOn>true</alwaysOn>
         <updateRate>30.0</updateRate>
-        <cameraName>vm_frnt_cam</cameraName>
+        <cameraName>viman/vm_frnt_cam</cameraName>
         <imageTopicName>image</imageTopicName>
         <cameraInfoTopicName>vm_frnt_cam_info</cameraInfoTopicName>
         <frameName>camera_link</frameName>

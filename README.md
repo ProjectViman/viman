@@ -60,6 +60,10 @@ rosrun viman_control viman_sa
 ```
 Step 3: Play the simulation in Gazebo, place the focus of the terminal opened in step 2 and read the instructions provided by the ROS node.
 
+#### Gazebo World
+The following is an image of the stack of cylinders that the UAV must map. The shown stack is used to complete stage 1.3.
+![Linear-Z-World](https://github.com/AuntyVIEW/viman/blob/master/viman_visualize/multimedia/linear_z_world.jpg)
+
 ## Utility
 ### To see sensor data (IMU and altimeter)
 ```

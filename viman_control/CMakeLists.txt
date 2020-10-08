@@ -88,6 +88,10 @@ target_link_libraries(viman_key_ctrl ${catkin_LIBRARIES})
 add_executable(viman_sa src/viman_sa.cpp src/vm_pid_linear.cpp src/vm_pid_rotate.cpp src/viman.cpp)
 target_link_libraries(viman_sa ${catkin_LIBRARIES})
 
+#### ROS node for semi-autonomous operation ####
+add_executable(vm_z_linear_nav src/vm_z_linear_nav.cpp src/vm_pid_linear.cpp src/vm_pid_rotate.cpp src/viman.cpp)
+target_link_libraries(vm_z_linear_nav ${catkin_LIBRARIES})
+
 #### Utility ROS node to observe sensor data (except camera) ####
 add_executable(vm_sensor_data src/utility/vm_sensor_data.cpp)
 target_link_libraries(vm_sensor_data ${catkin_LIBRARIES})

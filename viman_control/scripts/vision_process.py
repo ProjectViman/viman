@@ -116,8 +116,8 @@ class IdColor(threading.Thread):
 	green-red-purple-blue-yellow
 	"""
 	colors = ['green','red','purple','blue','yellow']
-	lower_limits = [(56,0,0), (0,0,0), (144,0,0), (94,127,0), (26,0,86)]
-	upper_limits = [(95,255,146), (1,255,144), (180,255,255), (124,255,255), (44,255,144)]
+	lower_limits = [(41,45,0), (0,0,190), (144,0,0), (94,127,0), (26,0,86)]
+	upper_limits = [(64,255,255), (7,255,255), (180,255,255), (124,255,255), (44,255,255)]
 	
 	def __init__(self, w=640, h=480, ch=3):
 		threading.Thread.__init__(self)
@@ -128,7 +128,7 @@ class IdColor(threading.Thread):
 		
 		# default values
 		self.window_name = 'Thresholded Window'
-		self.thresh_area = 150000.0
+		self.thresh_area = 140000.0
 		self.img = np.zeros((h, w, ch), np.uint8)
 		self.masks = np.zeros((h, w, len(self.colors)), np.uint8)
 		self.stop_process = False
@@ -161,7 +161,7 @@ class IdColor(threading.Thread):
 			
 			# find contours of each color
 			for count, col_name in enumerate(self.colors):
-				_, contours, hierarchy = cv2.findContours(self.masks[:,:,count].copy(),
+				_, contours, _ = cv2.findContours(self.masks[:,:,count].copy(),
 														  cv2.RETR_TREE,
 														  cv2.CHAIN_APPROX_SIMPLE)
 														  
@@ -188,7 +188,7 @@ class IdColor(threading.Thread):
 					self.colorid.area = area
 				elif(color_idx == -1 and count == len(self.colors)-1):
 					color_idx = -1
-				self.color_pub.publish(self.colorid)
+			self.color_pub.publish(self.colorid)
 			cv2.imshow(self.window_name, self.img)
 			cv2.waitKey(1)
 		cv2.destroyAllWindows()

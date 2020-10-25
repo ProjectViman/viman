@@ -17,6 +17,7 @@
   <build_depend>sensor_msgs</build_depend>
   <build_depend>image_transport</build_depend>
   <build_depend>message_generation</build_depend>
+  <build_depend>viman_utility </build_depend>
   
 
   <exec_depend>roscpp</exec_depend>
@@ -27,6 +28,7 @@
   <exec_depend>sensor_msgs</exec_depend>
   <exec_depend>message_runtime</exec_depend>
   <exec_depend>gazebo_ros</exec_depend>
+  <exec_depend>viman_utility </exec_depend>
 
   <export>
 	<gazebo_ros plugin_path="${prefix}/plugins"/>

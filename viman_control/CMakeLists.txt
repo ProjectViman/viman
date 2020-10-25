@@ -7,6 +7,7 @@ find_package(catkin REQUIRED COMPONENTS
 			 std_msgs
 			 sensor_msgs
 			 geometry_msgs
+       viman_utility
 			 image_transport)
 
 if(CATKIN_ENABLE_TESTING)
@@ -42,7 +43,7 @@ set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
 ###################################
 catkin_package(
    INCLUDE_DIRS include
-   CATKIN_DEPENDS roscpp rospy image_transport std_msgs sensor_msgs geometry_msgs message_runtime gazebo_ros
+   CATKIN_DEPENDS roscpp rospy image_transport std_msgs sensor_msgs geometry_msgs message_runtime gazebo_ros viman_utility
 )
 
 include_directories(${catkin_INCLUDE_DIRS})

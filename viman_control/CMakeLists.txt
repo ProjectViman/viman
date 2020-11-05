@@ -121,7 +121,7 @@ target_link_libraries(viman_sa ${catkin_LIBRARIES} vm_pid viman)
 
 #### ROS node for semi-autonomous operation in Z direction ####
 add_executable(vm_z_linear_nav src/vm_z_linear_nav.cpp)
-target_link_libraries(vm_z_linear_nav ${catkin_LIBRARIES} vm_pid viman)
+target_link_libraries(vm_z_linear_nav ${catkin_LIBRARIES} vm_pid viman map)
 
 ############# Utility Nodes #############
 

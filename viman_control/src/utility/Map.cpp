@@ -1,9 +1,9 @@
 #include "Map.h"
 
 /**
- * Input parameters:
- * std::string fileName - name of the file in which you wish to store your map. (Without extension)
- * std::string lndmrkNodeName - identifier in the map for a landmark node
+ * @brief Constructor
+ * @param std::string fileName - name of the file in which you wish to store your map. (Without extension)
+ * @param std::string lndmrkNodeName - identifier in the map for a landmark node
 */
 Map::Map(std::string fileName, std::string lndmrkNodeName){
 	_fileName = fileName+".g2o";
@@ -11,25 +11,34 @@ Map::Map(std::string fileName, std::string lndmrkNodeName){
 }
 
 /**
- * Closes the map file if it is open.
+ * @brief Adds landmark to the map
+ * Input parameters:
+ * @param std::string colorid - color observed
+ * @param double z - Z coordinate (wrt local frame) in m
+ * @param double yaw - yaw angle (wrt local frame) in deg
 */
-Map::~Map(){
-	if(_fio.is_open()){
-		_fio.close();
-	}
+void Map::addLndmrkZ(std::string colorid, double z, double yaw){
+	LndmrkLocs l;
+	l.colorid = colorid;
+	l.z = z;
+	l.yaw = yaw;
+
+	lndmrks.push_back(l);
 }
 
 /**
- * Returns true if writing to the map is successful, else returns false.
- * Input parameters:
- * std::string colorid - color observed
- * double z - Z coordinate (wrt local frame) in m
- * double yaw - yaw angle (wrt local frame) in deg
+ * @brief Returns true if writing the map to file is successful, else returns false.
 */
-bool Map::write(std::string colorid, double z, double yaw){
-	if(_fio.is_open()){
-		_fio << _lndmrkNodeName + " " + colorid + " " + std::to_string(z) + " "
-			 << std::to_string(yaw) << std::endl;
+bool Map::writeToFile(){
+	std::fstream fio;
+	fio.open(_fileName, std::ios::out);
+	if(fio.is_open()){
+		for(int i = 0; i < lndmrks.size(); i++){
+			fio << _lndmrkNodeName + " " + lndmrks[i].colorid + " "
+				<< std::to_string(lndmrks[i].z) + " "
+				<< std::to_string(lndmrks[i].yaw) << std::endl;
+		}
+		fio.close();
 		return true;
 	}
 	else{
@@ -38,60 +47,40 @@ bool Map::write(std::string colorid, double z, double yaw){
 }
 
 /**
- * @brief  Extracts the landmarks into a vector data member : lndmrks
+ * @brief  Extracts landmarks from file into a vector data member : lndmrks
  * type(lndmrks) : std::vector<LndmrkLocs>
 */
-void Map::extractLndmrks(){
-	if(_fio.is_open()){
-		return;
-	}
-	else{
-		std::string line;
-		std::vector<std::string> splitStr;
-		LndmrkLocs l;
+bool Map::readFromFile(){
+	std::fstream fio;
 
-		// open the file
-		_fio.open(_fileName, std::ios::in);
+	std::string line;
+	std::vector<std::string> splitStr;
+	LndmrkLocs l;
 
-		// Execute a loop untill EOF (End of File) 
-    	// point read pointer at beginning of file 
-    	_fio.seekg(0, std::ios::beg);
+	lndmrks.resize(0);
 
-		while (std::getline(_fio, line)) {
-			// extract data and place it in lndmrks 
-			std::istringstream iss(line); 
-			for(std::string s; iss >> s; ){
-				// std::cout << s << std::endl;
-				splitStr.push_back(s);
-			}
-			if(splitStr[0].compare(_lndmrkNodeName)==0){
-				l.colorid = splitStr[1]; 
-				l.z = std::stod(splitStr[2]);
-				l.yaw = std::stod(splitStr[3]);
-				lndmrks.push_back(l);
-			}
+	// open the file
+	fio.open(_fileName, std::ios::in);
+
+	// Execute a loop untill EOF (End of File) 
+    // point read pointer at beginning of file 
+    fio.seekg(0, std::ios::beg);
+
+	while (std::getline(fio, line)) {
+		// extract data and place it in lndmrks 
+		std::istringstream iss(line); 
+		for(std::string s; iss >> s; ){
+			// std::cout << s << std::endl;
+			splitStr.push_back(s);
+		}
+		if(splitStr[0].compare(_lndmrkNodeName)==0){
+			l.colorid = splitStr[1]; 
+			l.z = std::stod(splitStr[2]);
+			l.yaw = std::stod(splitStr[3]);
+			lndmrks.push_back(l);
+		}
 			splitStr.resize(0);
-    	} 
-    	// Close the file 
-    	_fio.close(); 
-	}
-}
-
-/**
- * Opens and closes stored map.
-*/
-void Map::toggleMapping(){
-	if(_fio.is_open()){
-		_fio.close();
-	}
-	else{
-		_fio.open(_fileName, std::ios::out);
-	}
-}
-
-/**
- * Returns true is mapping is on going, else false
-*/
-bool Map::mappingStatus(){
-	return _fio.is_open();
+    } 
+    // Close the file 
+    fio.close(); 
 }

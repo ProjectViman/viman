@@ -13,7 +13,7 @@
 #include "viman_utility/CamZ.h"
 
 // Libraries: Mapping
-#include <fstream>
+#include "Map.h"
 
 // Libraries: User control
 #include <termios.h>
@@ -22,8 +22,9 @@
 // Uncomment this if you want to use angle range (-180,180]
 #define USE_NEG_ANGLE
 
-// File name to store the map
-std::string senseMap = "senseMap";		// do not include extension
+// Map properties
+// Map m(mapLoc, lndmrkNodeName)
+Map m("/home/mate/viman_ws/src/viman/viman_control/maps/senseMap", "LNDMRK");
 
 /* DO NOT MODIFY BEYOND THIS LINE */
 

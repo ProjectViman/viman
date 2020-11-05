@@ -75,6 +75,15 @@ void read_input(void){
 			// reset height PID
 			case 'P': height_controller_.reset();
 					  break;
+			
+			// start/stop mapping
+			case 'm': if(isMapping){
+						isMapping = false;
+					  }
+					  else{
+						isMapping = true;
+					  }
+					  break;
 		}		
 	}
 }
@@ -88,6 +97,7 @@ void display_help(void){
 			<< "w: Decrease height by 0.1 m" << std::endl
 			<< "H: Set height PID gains" << std::endl
 			<< "P: Reset height PID" << std::endl
+			<< "m: Start/Stop mapping" << std::endl
 			<< "z: Display help" << std::endl
 			<< "x: Quit\n" << std::endl;
 }
@@ -115,6 +125,7 @@ int main(int argc, char **argv){
 	yaw_controller_.sp_range = 0.3;
 	
 	display_help();
+	// check if topics are present
     if( height_subs_.getTopic() != "")
         ROS_INFO("found altimeter height topic");
     else
@@ -136,7 +147,7 @@ int main(int argc, char **argv){
 	double cur_time;
 	double dt;
 		
-	set_points[2] = 0.5;
+	set_points[2] = 0;
 	set_orient.yaw = 0;
 		
 	while(do_not_quit && ros::ok()){

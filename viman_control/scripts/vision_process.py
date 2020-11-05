@@ -139,7 +139,7 @@ class IdColor(threading.Thread):
 		while not self.stop_process:
 			Output.lock.acquire()
 			max_area = 0
-			color_idx = -1;
+			color_idx = -1
 			self.colorid.name = ''
 			self.colorid.area = 0
 			try:
@@ -168,7 +168,7 @@ class IdColor(threading.Thread):
 				# get contour of maximum area of a color
 				color_max = 0
 				area = 0
-				c = None;
+				c = None
 				for _, contour in enumerate(contours):
 					area = cv2.contourArea(contour)
 					if (area > color_max):

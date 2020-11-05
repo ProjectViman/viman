@@ -14,7 +14,6 @@ if(CATKIN_ENABLE_TESTING)
   find_package(roslaunch REQUIRED)
 endif()
 
-
 find_package(gazebo REQUIRED)
 find_package(Boost REQUIRED COMPONENTS system)
 find_package(Protobuf REQUIRED)
@@ -81,23 +80,59 @@ set_target_properties(plugin_altimeter
     ${PROJECT_SOURCE_DIR}/plugins
 )
 
+############# Libraries for nodes #############
+
+set(NODE_LIBS ${PROJECT_SOURCE_DIR}/lib)
+
+# Library to control viman's instance
+add_library(viman SHARED src/viman.cpp)
+target_link_libraries(viman ${catkin_LIBRARIES})
+set_target_properties(viman 
+                      PROPERTIES
+                      LIBRARY_OUTPUT_DIRECTORY
+                      ${NODE_LIBS}
+)
+
+# Library for PID
+add_library(vm_pid SHARED src/vm_pid_linear.cpp src/vm_pid_rotate.cpp)
+set_target_properties(vm_pid 
+                      PROPERTIES
+                      LIBRARY_OUTPUT_DIRECTORY
+                      ${NODE_LIBS}
+)
+
+# Library for map storage
+add_library(map SHARED src/utility/Map.cpp)
+set_target_properties(map
+                      PROPERTIES
+                      LIBRARY_OUTPUT_DIRECTORY
+                      ${NODE_LIBS}
+)
+
+############# ROS Nodes #############
+
 #### ROS node for manual operation ####
-add_executable(viman_key_ctrl src/viman_key_ctrl.cpp src/viman.cpp)
-target_link_libraries(viman_key_ctrl ${catkin_LIBRARIES})
+add_executable(viman_key_ctrl src/viman_key_ctrl.cpp)
+target_link_libraries(viman_key_ctrl ${catkin_LIBRARIES} viman)
 
 #### ROS node for semi-autonomous operation ####
-add_executable(viman_sa src/viman_sa.cpp src/vm_pid_linear.cpp src/vm_pid_rotate.cpp src/viman.cpp)
-target_link_libraries(viman_sa ${catkin_LIBRARIES})
+add_executable(viman_sa src/viman_sa.cpp)
+target_link_libraries(viman_sa ${catkin_LIBRARIES} vm_pid viman)
 
-#### ROS node for semi-autonomous operation ####
-add_executable(vm_z_linear_nav src/vm_z_linear_nav.cpp src/vm_pid_linear.cpp src/vm_pid_rotate.cpp src/viman.cpp)
-target_link_libraries(vm_z_linear_nav ${catkin_LIBRARIES})
+#### ROS node for semi-autonomous operation in Z direction ####
+add_executable(vm_z_linear_nav src/vm_z_linear_nav.cpp)
+target_link_libraries(vm_z_linear_nav ${catkin_LIBRARIES} vm_pid viman)
+
+############# Utility Nodes #############
 
 #### Utility ROS node to observe sensor data (except camera) ####
 add_executable(vm_sensor_data src/utility/vm_sensor_data.cpp)
 target_link_libraries(vm_sensor_data ${catkin_LIBRARIES})
 
-install(DIRECTORY include include/plugin include/utility plugins src src/plugin src/utility
+############# Testing Nodes #############
+add_subdirectory(src/test)
+
+install(DIRECTORY include include/plugin include/utility plugins src src/plugin src/utility lib
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 
 catkin_install_python(PROGRAMS 

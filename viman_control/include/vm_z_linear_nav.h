@@ -26,6 +26,14 @@
 // Map m(mapLoc, lndmrkNodeName)
 Map m("/home/mate/viman_ws/src/viman/viman_control/maps/senseMap", "LNDMRK");
 
+// Mapping constants
+
+// SET_POINT_RANGE: new set point is created if current value is in set_point +- range
+#define SET_POINT_RANGE 0.05
+
+// SET_POINT_STEP: increase in set point to traverse the environment.
+#define SET_POINT_STEP 0.1
+
 /* DO NOT MODIFY BEYOND THIS LINE */
 
 // Store setpoints
@@ -66,6 +74,12 @@ void ImuCallbck(const sensor_msgs::Imu&);
 void CamCallbck(const viman_utility::CamZ&);
 
 // Mapping vars
-bool isMapping = false;
+bool isMapping;
+
+// Functions for mapping the environment
+void addDataPoint();
+void setNextSetPoint();
+void showStoredMap();
+void saveStoredMap();
 
 #endif // VM_Z_LINEAR_NAV

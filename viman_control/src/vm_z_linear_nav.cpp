@@ -1,4 +1,5 @@
 #include "vm_z_linear_nav.h"
+#include "Map.h"
 
 /* Receiving set point from the user */
 void initTermios(void){
@@ -37,7 +38,7 @@ void read_input(void){
 					  break; 
 			
 			// Stop
-			case 'S': vm.allStop();
+			case 's': vm.allStop();
 					  for(int i=0;i<3;i++){
 						 set_points[i] = 0;
 					  }
@@ -77,11 +78,32 @@ void read_input(void){
 					  break;
 			
 			// start/stop mapping
-			case 'm': if(isMapping){
+			case 'm':if(isMapping){
 						isMapping = false;
+						ROS_INFO("Stopped mapping");
 					  }
 					  else{
 						isMapping = true;
+						ROS_INFO("Started mapping");
+						m.lndmrks.resize(0);
+					  }
+					  break;
+
+			// show stored map
+			case 'M':if(isMapping){
+						ROS_INFO("Please wait, currently mapping.");
+					  }
+					  else{
+						showStoredMap();
+					  }
+					  break;
+
+			// save stored map as a file
+			case 'S':if(isMapping){
+						ROS_INFO("Please wait, currently mapping.");
+					  }
+					  else{
+						saveStoredMap();
 					  }
 					  break;
 		}		
@@ -90,21 +112,25 @@ void read_input(void){
 
 void display_help(void){
 	std::cout << "\nUse the following commands: "<< std::endl
+			<< " --- Motion commands ---" << std::endl
 			<< "t: Take off/Land (cmds work iff VIMAN has taken off)" << std::endl
-			<< "s: Start mapping" << std::endl
-			<< "S: Stop and set height = 0 m" << std::endl
+			<< "s: Stop and set height = 0 m" << std::endl
 			<< "q: Increase height by 0.1 m" << std::endl
 			<< "w: Decrease height by 0.1 m" << std::endl
 			<< "H: Set height PID gains" << std::endl
 			<< "P: Reset height PID" << std::endl
+			<< "\n --- Mapping commands ---" << std::endl
 			<< "m: Start/Stop mapping" << std::endl
+			<< "M: Show stored map" << std::endl
+			<< "S: Save stored map" << std::endl
+			<< "\n --- Misc commands ---" << std::endl
 			<< "z: Display help" << std::endl
 			<< "x: Quit\n" << std::endl;
 }
 
 int main(int argc, char **argv){
 	
-	ros::init(argc,argv,"viman_semiAuto");
+	ros::init(argc,argv,"vm_z_linear_nav");
 	ros::NodeHandle node;
 	
 	ros::Subscriber height_subs_ = node.subscribe("/viman/height",500,HeightCallbck);
@@ -136,6 +162,7 @@ int main(int argc, char **argv){
         ROS_INFO("cannot find imu topic!");
         
     isPidRunning = false;
+	isMapping = false;
     
 	//ros::Rate rate(2);
 	
@@ -165,7 +192,13 @@ int main(int argc, char **argv){
 			
 			vm.move(cmd_values[0],cmd_values[1],cmd_values[2],cmd_values[3]);
 			
-			prev_time = cur_time;			
+			prev_time = cur_time;
+
+			if(isMapping){
+				setNextSetPoint();
+				addDataPoint();
+			}
+
 		}
 		else{
 			prev_time = ros::Time::now().toSec();
@@ -190,7 +223,55 @@ void ImuCallbck(const sensor_msgs::Imu& imu_){
 	#endif
 }
 
-void CamCallbck(const viman_utility::CamZ& data){
-	
+void CamCallbck(const viman_utility::CamZ& camData_){
+	cur_color = camData_.name;
 }
 
+void setNextSetPoint(){
+	if((position[2] >= set_points[2] - SET_POINT_RANGE) && 
+	(position[2] <= set_points[2] + SET_POINT_RANGE)){
+		set_points[2] += SET_POINT_STEP;
+	}
+
+	// return back to ground if found nothing
+	if((prev_color.compare("")==0)&&
+		(prev_color.compare(cur_color)==0)){
+		set_points[2] = 0;
+		isMapping = false;
+		ROS_INFO("Stopped mapping");
+	}
+}
+
+void addDataPoint(){
+	if(prev_color.compare(cur_color)){
+		if(cur_color.compare("")){
+			m.addLndmrkZ(cur_color, position[2], cur_orient.yaw);
+		}
+		prev_color = cur_color;
+	}
+}
+
+void showStoredMap(){
+	if(m.lndmrks.size()>0){
+		std::cout << "STORED MAP: " << std::endl;
+		for(int i=0;i<m.lndmrks.size();i++){
+		std::cout << "Feature color: " << m.lndmrks[i].colorid + " --> @Z: " + std::to_string(m.lndmrks[i].z)
+			 <<  " | @Yaw: " + std::to_string(m.lndmrks[i].yaw) << std::endl;
+		}
+	}
+	else{
+		ROS_INFO("No stored map. Please map first.");
+	}
+}
+
+void saveStoredMap(){
+	if(m.lndmrks.size()>0){
+		if(m.writeToFile()){
+			ROS_INFO("Successfully written the map to a file.");
+		}
+	}
+	else{
+		ROS_INFO("No stored map. Please map first.");
+	}
+	
+}

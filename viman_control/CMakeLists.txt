@@ -85,27 +85,27 @@ set_target_properties(plugin_altimeter
 set(NODE_LIBS ${PROJECT_SOURCE_DIR}/lib)
 
 # Library to control viman's instance
-add_library(viman SHARED src/viman.cpp)
+add_library(viman STATIC src/viman.cpp)
 target_link_libraries(viman ${catkin_LIBRARIES})
 set_target_properties(viman 
                       PROPERTIES
-                      LIBRARY_OUTPUT_DIRECTORY
+                      ARCHIVE_OUTPUT_DIRECTORY
                       ${NODE_LIBS}
 )
 
 # Library for PID
-add_library(vm_pid SHARED src/vm_pid_linear.cpp src/vm_pid_rotate.cpp)
+add_library(vm_pid STATIC src/vm_pid_linear.cpp src/vm_pid_rotate.cpp)
 set_target_properties(vm_pid 
                       PROPERTIES
-                      LIBRARY_OUTPUT_DIRECTORY
+                      ARCHIVE_OUTPUT_DIRECTORY
                       ${NODE_LIBS}
 )
 
 # Library for map storage
-add_library(map SHARED src/utility/Map.cpp)
+add_library(map STATIC src/utility/Map.cpp)
 set_target_properties(map
                       PROPERTIES
-                      LIBRARY_OUTPUT_DIRECTORY
+                      ARCHIVE_OUTPUT_DIRECTORY
                       ${NODE_LIBS}
 )
 
@@ -130,7 +130,6 @@ add_executable(vm_sensor_data src/utility/vm_sensor_data.cpp)
 target_link_libraries(vm_sensor_data ${catkin_LIBRARIES})
 
 ############# Testing Nodes #############
-add_subdirectory(src/test)
 
 install(DIRECTORY include include/plugin include/utility plugins src src/plugin src/utility lib
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})

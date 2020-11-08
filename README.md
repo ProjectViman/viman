@@ -7,7 +7,7 @@ In order to incorporate autonomy into our UAV, the following milestones are to b
 - - [ ] SLAM Z (Stage 1)
   - - [x] Hover at a set height (Stage 1.1)
   - - [x] Hover with a set heading (Stage 1.2)
-  - - [ ] Linear-Z mapping (Stage 1.3)
+  - - [x] Linear-Z mapping (Stage 1.3)
     - - [x] Camera calibration (1.3.0)
     - - [x] Color thresholding (1.3.1)
     - - [x] Color identification (1.3.2)
@@ -59,6 +59,13 @@ Step 2: Open another terminal and execute the following command to use keyboard 
 rosrun viman_control viman_sa
 ```
 Step 3: Play the simulation in Gazebo, place the focus of the terminal opened in step 2 and read the instructions provided by the ROS node.
+
+#### 1.3 | Map the features observed by VIMAN and store it into a file
+Perform steps 1, and 2 from the above and then execute the following command in another terminal.
+```
+rosrun viman_control vm_z_linear_nav
+```
+Follow the instructions preseted by the ROS node.
 
 #### Gazebo World
 The following is an image of the stack of cylinders that the UAV must map. The shown stack is used to complete stage 1.3.

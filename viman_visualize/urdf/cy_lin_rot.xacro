@@ -4,13 +4,13 @@
 
   <!-- Macro to define cylinder stack links 
        Input parameters: 
-          yaw : angle to rotate current link wrt connectedTo (rotation about Z; multiples of 0.5236)
-          height: height to locate current link wrt connectedTo (+ve up Z; height of each part is 0.4) 
+          yaw : angle to rotate current link wrt connectedTo (rotation about Z; multiples of 30 deg)
+          level: level of cylinder stack
           color : color of the link
           id : id of current cylinder part
           connectedTo : id of link to which this link is connected
   -->
-  <xacro:macro name="cy_stack" params="yaw height id connectedTo color">        
+  <xacro:macro name="cy_stack" params="yaw level id connectedTo color">        
         
     <link name="l0_${id}">
       <inertial>
@@ -50,7 +50,7 @@
     <joint name="l0_${id}_jnt" type="fixed">
       <parent link="l0_${connectedTo}"/>
       <child link="l0_${id}"/>
-      <origin rpy="0 0 ${yaw}" xyz="0 0 ${height}"/>
+      <origin rpy="0 0 ${yaw}" xyz="0 0 ${level*0.4}"/>
     </joint>
 
     <gazebo reference="l0_${id}">
@@ -97,9 +97,32 @@
     <material>Gazebo/Blue</material>
   </gazebo>
 
-  <xacro:cy_stack yaw="0.5236" height="0" color="Blue" id="2" connectedTo="1"/>
-  <xacro:cy_stack yaw="0.5236" height="0" color="Blue" id="3" connectedTo="2"/>
-  <xacro:cy_stack yaw="0.5236" height="0.8" color="Red" id="4" connectedTo="2"/>
-  <xacro:cy_stack yaw="0.5236" height="0.4" color="Green" id="5" connectedTo="1"/>
+  <!-- Level 0 -->
+  <xacro:cy_stack yaw="${radians(60)}" level="0" color="Green" id="a" connectedTo="1"/>
+  <xacro:cy_stack yaw="${radians(60)}" level="0" color="Red" id="b" connectedTo="a"/>
+  <xacro:cy_stack yaw="${radians(60)}" level="0" color="Yellow" id="c" connectedTo="b"/>
+  <xacro:cy_stack yaw="${radians(60)}" level="0" color="Blue" id="d" connectedTo="c"/>
+  <xacro:cy_stack yaw="${radians(60)}" level="0" color="Purple" id="e" connectedTo="d"/>
+  
+  <!-- Level 1 -->
+  <xacro:cy_stack yaw="0" level="1" color="Red" id="f" connectedTo="1"/>
+  <xacro:cy_stack yaw="0" level="1" color="Yellow" id="g" connectedTo="b"/>
+  <xacro:cy_stack yaw="${radians(30)}" level="1" color="Purple" id="h" connectedTo="e"/>
+  <xacro:cy_stack yaw="${radians(30)}" level="1" color="Green" id="i" connectedTo="d"/>
+  <xacro:cy_stack yaw="${radians(30)}" level="1" color="Blue" id="j" connectedTo="e"/>
+
+   <!-- Level 2 -->
+  <xacro:cy_stack yaw="${radians(30)}" level="2" color="Green" id="k" connectedTo="1"/>
+  <xacro:cy_stack yaw="${radians(30)}" level="2" color="Yellow" id="l" connectedTo="b"/>
+  <xacro:cy_stack yaw="${radians(45)}" level="2" color="Purple" id="m" connectedTo="c"/>
+  <xacro:cy_stack yaw="${radians(30)}" level="2" color="Red" id="n" connectedTo="d"/>
+  <xacro:cy_stack yaw="${radians(30)}" level="2" color="Blue" id="o" connectedTo="e"/>
+
+  <!-- Level 3 -->
+  <xacro:cy_stack yaw="${radians(20)}" level="3" color="Yellow" id="p" connectedTo="1"/>
+  <xacro:cy_stack yaw="${radians(30)}" level="3" color="Blue" id="q" connectedTo="a"/>
+  <xacro:cy_stack yaw="${radians(45)}" level="3" color="Green" id="r" connectedTo="b"/>
+  <xacro:cy_stack yaw="${radians(40)}" level="3" color="Red" id="s" connectedTo="c"/>
+  <xacro:cy_stack yaw="${radians(30)}" level="3" color="Purple" id="t" connectedTo="d"/>
 
 </robot>

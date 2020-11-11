@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<robot name="cy_lin_rot" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- Macro to define cylinder stack links 
+       Input parameters: 
+          yaw : angle to rotate current link wrt connectedTo (rotation about Z; multiples of 0.5236)
+          height: height to locate current link wrt connectedTo (+ve up Z; height of each part is 0.4) 
+          color : color of the link
+          id : id of current cylinder part
+          connectedTo : id of link to which this link is connected
+  -->
+  <xacro:macro name="cy_stack" params="yaw height id connectedTo color">        
+        
+    <link name="l0_${id}">
+      <inertial>
+        <origin
+          xyz="-0.47271 0.2 -0.12666"
+          rpy="0 0 0" />
+        <mass
+          value="8.1901" />
+        <inertia
+          ixx="0.15142"
+          ixy="3.11E-16"
+          ixz="0.011238"
+          iyy="0.045502"
+          iyz="1.1913E-16"
+          izz="0.11249" />
+      </inertial>
+      <visual>
+        <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+        <geometry>
+        <mesh
+        filename="package://viman_visualize/meshes/cy_stack_part.STL" />
+        </geometry>
+      </visual>
+      <collision>
+        <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+        <geometry>
+        <mesh
+        filename="package://viman_visualize/meshes/cy_stack_part.STL" />
+        </geometry>
+      </collision>              
+    </link>
+          
+    <joint name="l0_${id}_jnt" type="fixed">
+      <parent link="l0_${connectedTo}"/>
+      <child link="l0_${id}"/>
+      <origin rpy="0 0 ${yaw}" xyz="0 0 ${height}"/>
+    </joint>
+
+    <gazebo reference="l0_${id}">
+      <material>Gazebo/${color}</material>
+    </gazebo>
+
+  </xacro:macro>   
+
+  <link name="l0_1">
+    <inertial>
+      <origin
+        xyz="-0.47271 0.2 -0.12666"
+        rpy="0 0 0" />
+      <mass
+        value="8.1901" />
+      <inertia
+        ixx="0.15142"
+        ixy="3.11E-16"
+        ixz="0.011238"
+        iyy="0.045502"
+        iyz="1.1913E-16"
+        izz="0.11249" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://viman_visualize/meshes/cy_stack_part.STL" />
+      </geometry>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://viman_visualize/meshes/cy_stack_part.STL" />
+      </geometry>
+    </collision>
+  </link>
+  
+  <gazebo reference="l0_1">
+    <material>Gazebo/Blue</material>
+  </gazebo>
+
+  <xacro:cy_stack yaw="0.5236" height="0" color="Blue" id="2" connectedTo="1"/>
+  <xacro:cy_stack yaw="0.5236" height="0" color="Blue" id="3" connectedTo="2"/>
+  <xacro:cy_stack yaw="0.5236" height="0.8" color="Red" id="4" connectedTo="2"/>
+  <xacro:cy_stack yaw="0.5236" height="0.4" color="Green" id="5" connectedTo="1"/>
+
+</robot>

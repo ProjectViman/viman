@@ -3,7 +3,7 @@
 <launch>
 	<arg name="on_rviz" default="false"/>
 	<arg name="model_name" default="viman"/>
-	<arg name="nav" default="0"/>				<!-- 0: normal | 1: z linear -->
+	<arg name="nav" default="0"/>				<!-- 0: normal | 1: z linear | 2: z linear and rotation-->
 	
 	<arg name="rvizconfig" 
 		value="$(find viman_visualize)/config/flight_mode.rviz" />
@@ -43,15 +43,29 @@
 		if="$(arg on_rviz)"/>
 	
 	<group if = "$(eval arg('nav')==1)">
-		<param name="cy_linear_desc" 
+		<param name="cy_stack_desc" 
 		 command="$(find xacro)/xacro $(find viman_visualize)/urdf/cy_linear.xacro"/>
 	
-		<node name="cy_linear_spawner" 
+		<node name="cy_stack_spawner" 
 			pkg="gazebo_ros"
 			type="spawn_model" 
 			respawn="false"
 			output="screen"
-			args="-urdf -model cy_linear -param cy_linear_desc"
+			args="-urdf -model cy_stack -param cy_stack_desc"
 		/>
 	</group>
+
+	<group if = "$(eval arg('nav')==2)">
+		<param name="cy_stack_desc" 
+		 command="$(find xacro)/xacro $(find viman_visualize)/urdf/cy_lin_rot.xacro"/>
+	
+		<node name="cy_stack_spawner" 
+			pkg="gazebo_ros"
+			type="spawn_model" 
+			respawn="false"
+			output="screen"
+			args="-urdf -model cy_stack -param cy_stack_desc"
+		/>
+	</group>
+
 </launch>

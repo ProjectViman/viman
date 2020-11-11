@@ -1,3 +1,6 @@
+# mapping files
+*.g2o
+
 # Editors
 .vscode/
 .idea/

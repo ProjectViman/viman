@@ -1,5 +1,4 @@
 #include "vm_z_linear_nav.h"
-#include "Map.h"
 
 /* Receiving set point from the user */
 void initTermios(void){

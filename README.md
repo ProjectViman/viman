@@ -39,7 +39,7 @@ This repository contains two ROS packages:
 ### 0 | Control via keyboard
 Step 1: Execute the following command in terminal to launch the Gazebo world with *viman*.
 ```
-roslaunch viman_visualize display-gazebo.launch on_rviz:=true
+roslaunch viman_visualize gazebo-disp.launch on_rviz:=true
 ```
 Step 2: Open another terminal and execute the following command to use keyboard keys to control the quadcopter.
 ```
@@ -52,7 +52,7 @@ Step 3: Play the simulation in Gazebo, place the focus of the terminal opened in
 #### 1.1 & 1.2 | Hover at a height with a set heading 
 Step 1: Execute the following command in terminal to launch the Gazebo world with *viman*.
 ```
-roslaunch viman_visualize display-gazebo.launch on_rviz:=true
+roslaunch viman_visualize gazebo-disp.launch on_rviz:=true
 ```
 Step 2: Open another terminal and execute the following command to use keyboard keys to control the quadcopter.
 ```

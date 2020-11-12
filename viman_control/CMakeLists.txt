@@ -120,6 +120,7 @@ add_executable(viman_sa src/viman_sa.cpp)
 target_link_libraries(viman_sa ${catkin_LIBRARIES} vm_pid viman)
 
 add_subdirectory(src/slam_Z)
+add_subdirectory(scripts/slam_Z)
 
 ############# Utility Nodes #############
 

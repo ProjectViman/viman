@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 
 import threading
 
@@ -37,13 +37,14 @@ class IdColor(threading.Thread):
 		self.colorid = CamZ()
 		
 		# default values
-		self.w = w
-		self.h = h
-		self.window_name = 'SLAM Z Vision'
-		self.thresh_area = 65000.0
-		self.img = np.zeros((h, w, ch), np.uint8)
-		self.masks = np.zeros((h, w, len(self.colors)), np.uint8)
-		self.stop_process = False
+		self.w = w			# width of the image frame
+		self.h = h			# height of the image frame
+		self.center_rad = 50				# radius of circle defining mid point of frame's sensitivity
+		self.window_name = 'SLAM Z Vision'	# name of the output window
+		self.thresh_area = 65000.0			# minimum area of the color in frame
+		self.img = np.zeros((h, w, ch), np.uint8)		# the actual image frame from camera
+		self.masks = np.zeros((h, w, len(self.colors)), np.uint8)		# matrix array to store masks for each color
+		self.stop_process = False										# flag variable to start/stop processing
 	
 	def run(self):
 		kernal = np.ones((5,5), "uint8")
@@ -51,7 +52,7 @@ class IdColor(threading.Thread):
 		while not self.stop_process:
 			Output.lock.acquire()
 			max_area = 0
-			color_idx = -1
+			max_contour = None
 			self.colorid.name = ''
 			self.colorid.area = 0
 			try:
@@ -70,7 +71,7 @@ class IdColor(threading.Thread):
 												self.upper_limits[count])
 				self.masks[:,:, count] = cv2.dilate(self.masks[:,:,count],
 													kernal)
-			##################################################
+
 			# find contours of each color
 			for count, col_name in enumerate(self.colors):
 				_, contours, _ = cv2.findContours(self.masks[:,:,count].copy(),
@@ -88,30 +89,38 @@ class IdColor(threading.Thread):
 						c = contour
 						
 				# take the max area contour amongst the colors
-				# if(color_max > self.thresh_area and color_max > max_area):
-				if(color_max > self.thresh_area):
+				if(color_max > self.thresh_area and color_max > max_area):
+					max_area = color_max
 
-					# compute the center of the contour
-					M = cv2.moments(c)
-					cX = int(M["m10"] / M["m00"])
-					cY = int(M["m01"] / M["m00"])
+					# store the max contour of color of max area
+					max_contour = c
+
+					# store IDs characteristics of max area color
+					self.colorid.name = col_name
+					self.colorid.area = area
+
+			# proceed if actually found a contour
+			if max_contour is not None:
+				# compute the center of the contour for max area color
+				M = cv2.moments(max_contour)
+				cX = int(M["m10"] / M["m00"])
+				cY = int(M["m01"] / M["m00"])
 					
-					if(abs(cX-self.w/2)<=20 and abs(cY-self.h/2)<=20):
-						# draw the bounding rectangle
-						x, y, w, h = cv2.boundingRect(c)
-						self.img = cv2.rectangle(self.img, (x,y), (x+w, y+h),
-												(0,0,0), 2)
-						self.img = cv2.putText(self.img, str((cX, cY)), (x+w,y+h-10), cv2.FONT_HERSHEY_COMPLEX, 0.9, (0,0,0), 2)
-						self.img = cv2.circle(self.img, (cX, cY), 5, (255, 255, 255), -1)
-						self.img = cv2.circle(self.img, (self.w/2, self.h/2), 5, (0, 0, 0), -1)
-						self.img = cv2.circle(self.img, (self.w/2, self.h/2), 20, (0, 0, 0), 1)
-						self.colorid.name = col_name
-						self.colorid.area = area
-				elif(color_idx == -1 and count == len(self.colors)-1):
-					color_idx = -1
-			################################################
+				if(abs(cX-self.w/2)<=self.center_rad and abs(cY-self.h/2)<=self.center_rad):
+					# draw bounding rectangle and centeroid
+					x, y, w, h = cv2.boundingRect(max_contour)
+					self.img = cv2.rectangle(self.img, (x,y), (x+w, y+h),
+													(0,0,0), 2)
+					self.img = cv2.circle(self.img, (cX, cY), 5, (255, 255, 255), -1)					
+				else:
+					self.colorid.name = ''
+					self.colorid.area = 0
+
+			self.color_pub.publish(self.colorid)
+			# draw frame center and sensitivity region
+			self.img = cv2.circle(self.img, (self.w/2, self.h/2), 5, (0, 0, 0), -1)
+			self.img = cv2.circle(self.img, (self.w/2, self.h/2), self.center_rad, (0, 0, 0), 1)
 			
-			# self.color_pub.publish(self.colorid)
 			cv2.imshow(self.window_name, self.img)
 			cv2.waitKey(1)
 		cv2.destroyAllWindows()

@@ -139,7 +139,6 @@ class IdColor(threading.Thread):
 		while not self.stop_process:
 			Output.lock.acquire()
 			max_area = 0
-			color_idx = -1
 			self.colorid.name = ''
 			self.colorid.area = 0
 			try:
@@ -178,7 +177,6 @@ class IdColor(threading.Thread):
 				# take the max area contour amongst the colors
 				if(color_max > self.thresh_area and color_max > max_area):
 					max_area = color_max
-					color_idx = count
 					
 					# draw the bounding rectangle
 					x, y, w, h = cv2.boundingRect(c)
@@ -186,8 +184,6 @@ class IdColor(threading.Thread):
 											 (0,0,0), 2)
 					self.colorid.name = col_name
 					self.colorid.area = area
-				elif(color_idx == -1 and count == len(self.colors)-1):
-					color_idx = -1
 			self.color_pub.publish(self.colorid)
 			cv2.imshow(self.window_name, self.img)
 			cv2.waitKey(1)

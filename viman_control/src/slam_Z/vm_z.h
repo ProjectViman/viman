@@ -37,6 +37,9 @@ Map m("/home/mate/viman_ws/src/viman/viman_control/maps/zMap", "LNDMRKZ");
 // SET_POINT_STEP_ROT: increment in set point ccw yaw (deg) to traverse the environment.
 #define SET_POINT_STEP_ROT 5
 
+// SEARCH_CONST: Used for setting new setpoint for searching landmark. SEARCH_CONST * SET_POINT_STEP*[LIN/ROT]
+#define SEARCH_CONST 4
+
 /* DO NOT MODIFY BEYOND THIS LINE */
 
 // Store setpoints
@@ -78,6 +81,7 @@ void CamCallbck(const viman_utility::CamZ&);
 
 // Mapping vars
 bool isMapping;
+bool isSearching;
 
 // Functions for mapping the environment
 void addDataPoint();

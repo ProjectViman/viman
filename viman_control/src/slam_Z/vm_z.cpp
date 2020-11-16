@@ -41,6 +41,7 @@ void read_input(void){
 					  for(int i=0;i<3;i++){
 						 set_points[i] = 0;
 					  }
+					  set_orient.yaw = 0;
 					  if(isMapping) isMapping = false;
 					  ROS_INFO("Set height: %f",set_points[2]);
 					  break;
@@ -172,6 +173,7 @@ int main(int argc, char **argv){
         
     isPidRunning = false;
 	isMapping = false;
+	isSearching = false;
     
 	//ros::Rate rate(2);
 	
@@ -239,15 +241,31 @@ void CamCallbck(const viman_utility::CamZ& camData_){
 void setNextSetPoint(){
 	if((position[2] >= set_points[2] - SET_POINT_RANGE) && 
 	(position[2] <= set_points[2] + SET_POINT_RANGE)){
-		set_points[2] += SET_POINT_STEP_LIN;
+		if(isSearching){
+			set_points[2] = 0;
+			isMapping = false;
+			isSearching = false;
+			ROS_INFO("Stopped searching. Did not find any new landmark.");
+			ROS_INFO("Stopped mapping");
+			return;
+		}
+		else{
+			set_points[2] += SET_POINT_STEP_LIN;
+		}
 	}
 
-	// return back to ground if found nothing
+	// search for a while if found nothing
 	if((prev_color.compare("")==0)&&
 		(prev_color.compare(cur_color)==0)){
-		set_points[2] = 0;
-		isMapping = false;
-		ROS_INFO("Stopped mapping");
+		
+		if(!isSearching){
+			set_points[2] += SET_POINT_STEP_LIN*SEARCH_CONST;
+			isSearching  = true;
+			ROS_INFO("Started searching");
+		}
+	}
+	else{
+		isSearching = false;
 	}
 }
 

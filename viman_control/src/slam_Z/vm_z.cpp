@@ -155,9 +155,9 @@ int main(int argc, char **argv){
 	height_controller_.gain_i = 0.1;
 	height_controller_.gain_d = 0.03;
 	
-	yaw_controller_.gain_p = 0.6;
-	yaw_controller_.gain_i = 0.1;
-	yaw_controller_.gain_d = 0.4;
+	yaw_controller_.gain_p = 0.2;
+	yaw_controller_.gain_i = 0.01;
+	yaw_controller_.gain_d = 0.05;
 	yaw_controller_.sp_range = 0.3;
 	
 	display_help();
@@ -173,7 +173,6 @@ int main(int argc, char **argv){
         
     isPidRunning = false;
 	isMapping = false;
-	isSearching = false;
     
 	//ros::Rate rate(2);
 	
@@ -185,7 +184,7 @@ int main(int argc, char **argv){
 	double cur_time;
 	double dt;
 		
-	set_points[2] = 0;
+	set_points[2] = 0.1;
 	set_orient.yaw = 0;
 		
 	while(do_not_quit && ros::ok()){
@@ -238,34 +237,40 @@ void CamCallbck(const viman_utility::CamZ& camData_){
 	cur_color = camData_.name;
 }
 
+/**
+ * Implements the landmark searching algorithm:
+ * 
+ * Viman moves linearly in fixed step sizes. Once it reaches a height, it
+ * rotates and searches for landmarks. 
+ */
 void setNextSetPoint(){
+	// once viman reaches a set height
 	if((position[2] >= set_points[2] - SET_POINT_RANGE) && 
 	(position[2] <= set_points[2] + SET_POINT_RANGE)){
-		if(isSearching){
-			set_points[2] = 0;
-			isMapping = false;
-			isSearching = false;
-			ROS_INFO("Stopped searching. Did not find any new landmark.");
-			ROS_INFO("Stopped mapping");
-			return;
+		// rotate 360 degrees and search
+		// update the set point for continuos rotation
+		if((cur_orient.yaw >= set_orient.yaw - SEARCH_CONST*SET_POINT_RANGE) &&
+			(cur_orient.yaw <= set_orient.yaw + SEARCH_CONST*SET_POINT_RANGE)){
+				if(set_orient.yaw == 180){
+					set_orient.yaw = 0;
+					// increment the height set point once viman comes back to
+					// original position
+					set_points[2] += SET_POINT_STEP_LIN;
+					ROS_INFO("Increased height set point");
+				}
+				else{
+					set_orient.yaw = 180;
+				}	
 		}
-		else{
-			set_points[2] += SET_POINT_STEP_LIN;
-		}
-	}
 
-	// search for a while if found nothing
-	if((prev_color.compare("")==0)&&
-		(prev_color.compare(cur_color)==0)){
-		
-		if(!isSearching){
-			set_points[2] += SET_POINT_STEP_LIN*SEARCH_CONST;
-			isSearching  = true;
-			ROS_INFO("Started searching");
+		// stop searching once upper limit is reached
+		if(set_points[2] >= MAX_HEIGHT){
+			height_controller_.reset();
+			yaw_controller_.reset();
+			set_orient.yaw = 0;
+			set_points[2] = 0;
+			ROS_INFO("Finished mapping. Returning to ground.");
 		}
-	}
-	else{
-		isSearching = false;
 	}
 }
 

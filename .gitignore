@@ -1,5 +1,5 @@
 # mapping files
-*.g2o
+# *.g2o
 
 # Editors
 .vscode/

@@ -24,21 +24,24 @@
 
 // Map properties
 // Map m(mapLoc, lndmrkNodeName)
-Map m("/home/mate/viman_ws/src/viman/viman_control/maps/zMap", "LNDMRKZ");
+Map m("/home/mate/viman_ws/src/viman/viman_control/maps/zMap1", "LNDMRKZ");
 
 // Mapping constants
+
+// MAX_HEIGHT: maximum height for mapping
+#define MAX_HEIGHT 2
 
 // SET_POINT_RANGE: new set point is created if current value is in set_point +- range
 #define SET_POINT_RANGE 0.05
 
 // SET_POINT_STEP_LIN: increment in set point +ve Z direction to traverse the environment.
-#define SET_POINT_STEP_LIN 0.1
+#define SET_POINT_STEP_LIN 0.05
 
 // SET_POINT_STEP_ROT: increment in set point ccw yaw (deg) to traverse the environment.
-#define SET_POINT_STEP_ROT 5
+#define SET_POINT_STEP_ROT 180
 
 // SEARCH_CONST: Used for setting new setpoint for searching landmark. SEARCH_CONST * SET_POINT_STEP*[LIN/ROT]
-#define SEARCH_CONST 4
+#define SEARCH_CONST 100
 
 /* DO NOT MODIFY BEYOND THIS LINE */
 
@@ -81,7 +84,7 @@ void CamCallbck(const viman_utility::CamZ&);
 
 // Mapping vars
 bool isMapping;
-bool isSearching;
+// bool isSearching;
 
 // Functions for mapping the environment
 void addDataPoint();

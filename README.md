@@ -11,8 +11,8 @@ In order to incorporate autonomy into our UAV, the following milestones are to b
     - - [x] Camera calibration (1.3.0)
     - - [x] Color thresholding (1.3.1)
     - - [x] Color identification (1.3.2)
-  - - [ ] Rotation-Z mapping (Stage 1.4)
-  - - [ ] Z mapping (Stage 1.5)
+  - - [x] Rotation-Z mapping (Stage 1.4)
+  - - [x] Z mapping (Stage 1.5)
 - - [ ] SLAM X (Stage 2)
 - - [ ] SLAM Y (Stage 3)
 - - [ ] Complete SLAM (Stage 4)
@@ -78,7 +78,7 @@ rosrun viman_control vm_sensor_data
 ```
 ### To view camera output (SLAM Z)
 ```
-rosrun viman_control frnt_vision.py
+rosrun viman_control z_vision.py
 ```
 ### To view the color identified by the camera (SLAM Z)
 ```

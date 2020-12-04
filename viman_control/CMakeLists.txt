@@ -128,6 +128,8 @@ add_subdirectory(scripts/slam_Z)
 add_executable(vm_sensor_data src/utility/vm_sensor_data.cpp)
 target_link_libraries(vm_sensor_data ${catkin_LIBRARIES})
 
+add_subdirectory(src/utility)
+
 ############# Testing Nodes #############
 
 install(DIRECTORY include include/plugin include/utility plugins src src/plugin src/utility lib

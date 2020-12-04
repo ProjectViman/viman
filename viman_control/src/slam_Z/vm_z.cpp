@@ -106,6 +106,15 @@ void read_input(void){
 						showStoredMap();
 					  }
 					  break;
+			
+			// optimize map
+			case 'O':if(isMapping){
+						ROS_INFO("Please wait, currently mapping.");
+					  }
+					  else{
+						optimizeMap();
+					  }
+					  break;
 
 			// save stored map as a file
 			case 'S':if(isMapping){
@@ -133,6 +142,7 @@ void display_help(void){
 			<< "m: Start/Stop mapping" << std::endl
 			<< "M: Show stored map" << std::endl
 			<< "S: Save stored map" << std::endl
+			<< "O: Optimize map and store optimized map" << std::endl
 			<< "\n --- Misc commands ---" << std::endl
 			<< "z: Display help" << std::endl
 			<< "x: Quit\n" << std::endl;
@@ -269,6 +279,7 @@ void setNextSetPoint(){
 			yaw_controller_.reset();
 			set_orient.yaw = 0;
 			set_points[2] = 0;
+			isMapping = false;
 			ROS_INFO("Finished mapping. Returning to ground.");
 		}
 	}
@@ -306,4 +317,26 @@ void saveStoredMap(){
 		ROS_INFO("No stored map. Please map first.");
 	}
 	
+}
+
+void optimizeMap(){
+	if(m.lndmrks.size()>0){
+		std::vector<std::string> colors(5);
+		colors.at(0) = "yellow";
+		colors.at(1) = "red"; 
+		colors.at(2) = "blue"; 
+		colors.at(3) = "green"; 
+		colors.at(4) = "purple";
+		
+		m.optimize_map(colors, 8.6, 2);
+		std::string temp = m._fileName;
+		m._fileName = temp + "_opt";
+		if(m.writeToFile()){
+			ROS_INFO("Successfully written the optimized map to a file.");
+		}
+		m._fileName = temp;
+	}
+	else{
+		ROS_INFO("No stored map. Please map first.");
+	}
 }

@@ -90,6 +90,7 @@ bool isMapping;
 void addDataPoint();
 void setNextSetPoint();
 void showStoredMap();
+void optimizeMap();
 void saveStoredMap();
 
 #endif // VM_Z

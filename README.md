@@ -122,7 +122,7 @@ th_processing = DisplayImg() # For HSV thresholding
 ...
 ...
 ```
-![Color-Thresholding](https://github.com/AuntyVIEW/viman/blob/master/viman_visualize/multimedia/thresholding.png)
+![Color-Thresholding](https://github.com/AuntyVIEW/viman/blob/master/viman_utility/multimedia/thresholding.png)
 
 ### roslaunch parameters
 Note: Parameter values in **bold** correspond to default value.

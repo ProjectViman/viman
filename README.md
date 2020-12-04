@@ -4,7 +4,7 @@ With Project VIMAN, we aim to build a quadcopter capable of maneuvering in auton
 
 In order to incorporate autonomy into our UAV, the following milestones are to be achieved:
 - - [x] Control via keyboard (Stage 0)
-- - [ ] SLAM Z (Stage 1)
+- - [x] SLAM Z (Stage 1)
   - - [x] Hover at a set height (Stage 1.1)
   - - [x] Hover with a set heading (Stage 1.2)
   - - [x] Linear-Z mapping (Stage 1.3)
@@ -14,6 +14,7 @@ In order to incorporate autonomy into our UAV, the following milestones are to b
   - - [x] Rotation-Z mapping (Stage 1.4)
   - - [x] Z mapping (Stage 1.5)
 - - [ ] SLAM X (Stage 2)
+  - - [ ] Detect motion in X direction using camera (Stage 2.1)
 - - [ ] SLAM Y (Stage 3)
 - - [ ] Complete SLAM (Stage 4)
 
@@ -61,9 +62,20 @@ rosrun viman_control viman_sa
 Step 3: Play the simulation in Gazebo, place the focus of the terminal opened in step 2 and read the instructions provided by the ROS node.
 
 #### 1.3 | Map the features observed by VIMAN and store it into a file
-Perform steps 1, and 2 from the above and then execute the following command in another terminal.
+Step 1: Execute the following command in terminal to launch the Gazebo world with *viman*.
+```
+roslaunch viman_visualize gazebo-disp.launch nav:=1
+```
+Step 2: Open another terminal and then execute the following command
 ```
 rosrun viman_control vm_z_linear_nav
+```
+Follow the instructions preseted by the ROS node.
+
+#### 1 | Map the features observed by VIMAN and optimize the graph
+Perform step 1 from 1.3 and then execute the following command in another terminal.
+```
+rosrun viman_control vm_z
 ```
 Follow the instructions preseted by the ROS node.
 
@@ -84,6 +96,10 @@ rosrun viman_control z_vision.py
 ```
 rostopic echo /viman/color_id
 ```
+### To visualize optimized and unoptimized maps (works only with `vm_z`)
+```
+rosrun viman_control visualize_map
+```
 
 ### To find HSV color ranges for color thresholding
 Make use the following changes in `frnt_vision.py`
@@ -102,13 +118,26 @@ th_processing = DisplayImg() # For HSV thresholding
 ### roslaunch parameters
 Note: Parameter values in **bold** correspond to default value.
 
-1) `display-gazebo.launch`:
+1) `gazebo-disp.launch`:
 - `on_rviz`: **false**/true | To show or not to show RViz displaying the front camera output.
-- `nav`: **0**/1 | Choose type of navigation:
+- `nav`: **0**/1/2 | Choose type of navigation:
   - 0 - Empty world
   - 1 - Additional stacked cylinders for only z linear navigation
+  - 2 - Parital cylinders stacked for SLAM Z navigation
 
+## References
+- [sjtu-drone][4] repository for simulation base.
+- [This][5] answer from stack-overflow for `getch` equivalent in Ubuntu.
+- [dbscan-cpp][6] repository for implementing DBSCAN algorithm to optimize map.
+- [matplotlib-cpp][7] repository for `visualize_map` ROS node.
+- Google search
 
 [1]:https://github.com/AuntyVIEW/viman/tree/master/viman_control
 [2]:https://github.com/AuntyVIEW/viman/tree/master/viman_visualize
 [3]:https://github.com/AuntyVIEW/viman/tree/master/viman_utility
+[4]:https://github.com/tahsinkose/sjtu-drone
+[5]:https://stackoverflow.com/questions/7469139/what-is-the-equivalent-to-getch-getche-in-linux
+[6]:https://github.com/foreseaz/dbscan-cpp
+[7]:https://github.com/lava/matplotlib-cpp
+
+

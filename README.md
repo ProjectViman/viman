@@ -33,7 +33,7 @@ This repository contains two ROS packages:
 
 > Note: Make sure you have ROS' `cv_bridge` because OpenCV 3.2 with Python2.7 has been used for vision processing.
 
-![UAV - VIMAN](https://github.com/AuntyVIEW/viman/blob/master/viman_visualize/multimedia/open_sky_1.jpg)
+![UAV - VIMAN](https://github.com/AuntyVIEW/viman/blob/master/viman_utility/multimedia/open_sky_1.jpg)
 
 ## Implementation
 
@@ -80,8 +80,11 @@ rosrun viman_control vm_z
 Follow the instructions preseted by the ROS node.
 
 #### Gazebo World
-The following is an image of the stack of cylinders that the UAV must map. The shown stack is used to complete stage 1.3.
-![Linear-Z-World](https://github.com/AuntyVIEW/viman/blob/master/viman_visualize/multimedia/linear_z_world.png)
+The following is an image of the stack of cylinders that the UAV must map. The shown stack is used to complete stage 1.3.<br>
+![Linear-Z-World](https://github.com/AuntyVIEW/viman/blob/master/viman_utility/multimedia/linear_z_world.png)
+<br>
+The following GIF shows the partial cylinder stack (spawned via `nav:=2`. The environment shown is used for SLAM Z)<br>
+![motion-z-key](https://github.com/AuntyVIEW/viman/blob/master/viman_utility/multimedia/motion_z_keyboard.gif)
 
 ## Utility
 ### To see sensor data (IMU and altimeter)
@@ -100,6 +103,12 @@ rostopic echo /viman/color_id
 ```
 rosrun viman_control visualize_map
 ```
+Once the ROS node is run, it shows two plots:
+1. Unoptimized map
+2. Optimized map <br>
+![unoptimized](https://github.com/AuntyVIEW/viman/blob/master/viman_utility/multimedia/unoptimized.png)
+![optimized](https://github.com/AuntyVIEW/viman/blob/master/viman_utility/multimedia/optimized.png)
+
 
 ### To find HSV color ranges for color thresholding
 Make use the following changes in `frnt_vision.py`
@@ -125,6 +134,10 @@ Note: Parameter values in **bold** correspond to default value.
   - 1 - Additional stacked cylinders for only z linear navigation
   - 2 - Parital cylinders stacked for SLAM Z navigation
 
+## Other VIMAN repositories
+1. [viman_vo][8] : Repo containing python code related to visual odometry.
+2. [Viman-Dead_Reckoning][9] : Repo containing cpp code to obtain odometry via IMU.
+
 ## References
 - [sjtu-drone][4] repository for simulation base.
 - [This][5] answer from stack-overflow for `getch` equivalent in Ubuntu.
@@ -139,5 +152,5 @@ Note: Parameter values in **bold** correspond to default value.
 [5]:https://stackoverflow.com/questions/7469139/what-is-the-equivalent-to-getch-getche-in-linux
 [6]:https://github.com/foreseaz/dbscan-cpp
 [7]:https://github.com/lava/matplotlib-cpp
-
-
+[8]:https://github.com/AuntyVIEW/viman_vo
+[9]:https://github.com/AuntyVIEW/Viman-Dead_Reckoning

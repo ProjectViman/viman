@@ -3,7 +3,13 @@
 <launch>
 	<arg name="on_rviz" default="false"/>
 	<arg name="model_name" default="viman"/>
-	<arg name="nav" default="0"/>				<!-- 0: normal | 1: z linear | 2: z linear and rotation-->
+	<!--
+		0: normal
+		1: z linear
+		2: z linear and rotation
+		3: environment 2
+	-->
+	<arg name="nav" default="0"/>				
 	
 	<arg name="rvizconfig" 
 		value="$(find viman_visualize)/config/flight_mode.rviz" />
@@ -12,7 +18,8 @@
 	<arg name="gui" value="true"/>
 	<arg name="paused" value="true"/>
 	<arg name="use_sim_time" value="true"/>
-	<arg name="world" value="$(find viman_visualize)/worlds/open_sky.world"/>
+	<arg name="world" value="$(find viman_visualize)/worlds/open_sky.world" if = "$(eval arg('nav')!=3)"/>
+	<arg name="world" value="$(find viman_visualize)/worlds/env2.world" if = "$(eval arg('nav')==3)"/>
 	
 	<!-- Launching the world -->
 	<include file="$(find gazebo_ros)/launch/empty_world.launch">
@@ -26,14 +33,6 @@
 	
 	<param name="robot_description" 
 		 command="$(find xacro)/xacro $(find viman_visualize)/urdf/$(arg model_name).xacro" />
-	
-	<node name="urdf_spawner" 
-		pkg="gazebo_ros"
-		type="spawn_model" 
-		respawn="false"
-		output="screen"
-		args="-urdf -model $(arg model_name) -param robot_description"
-	/>
 	
 	<node 
 		name="rviz" 
@@ -53,6 +52,15 @@
 			output="screen"
 			args="-urdf -model cy_stack -param cy_stack_desc"
 		/>
+
+		<node name="urdf_spawner" 
+			pkg="gazebo_ros"
+			type="spawn_model" 
+			respawn="false"
+			output="screen"
+			args="-urdf -model $(arg model_name) -param robot_description"
+		/>
+
 	</group>
 
 	<group if = "$(eval arg('nav')==2)">
@@ -66,6 +74,47 @@
 			output="screen"
 			args="-urdf -model cy_stack -param cy_stack_desc"
 		/>
+
+		<node name="urdf_spawner" 
+			pkg="gazebo_ros"
+			type="spawn_model" 
+			respawn="false"
+			output="screen"
+			args="-urdf -model $(arg model_name) -param robot_description"
+		/>
+
+	</group>
+
+	<group if = "$(eval arg('nav')==3)">
+		<param name="task1_gate_desc" 
+		 	command="$(find xacro)/xacro $(find viman_visualize)/urdf/task1_gate.xacro" />
+		<param name="vmpad_desc" 
+		 	command="$(find xacro)/xacro $(find viman_visualize)/urdf/vmpad.xacro" />
+		
+		<node name="spawn_task1_gate" 
+			pkg="gazebo_ros"
+			type="spawn_model" 
+			respawn="false"
+			output="screen"
+			args="-urdf -model task1_gate -param task1_gate_desc -x 3 -y 3 -z 5"
+		/>
+
+		<node name="spawn_vmpad" 
+			pkg="gazebo_ros"
+			type="spawn_model" 
+			respawn="false"
+			output="screen"
+			args="-urdf -model vmpad -param vmpad_desc -z 3"
+		/>
+
+		<node name="urdf_spawner" 
+			pkg="gazebo_ros"
+			type="spawn_model" 
+			respawn="false"
+			output="screen"
+			args="-urdf -model $(arg model_name) -param robot_description -z 3.08"
+		/>
+
 	</group>
 
 </launch>

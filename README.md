@@ -13,10 +13,10 @@ In order to incorporate autonomy into our UAV, the following milestones are to b
     - - [x] Color identification (1.3.2)
   - - [x] Rotation-Z mapping (Stage 1.4)
   - - [x] Z mapping (Stage 1.5)
-- - [ ] SLAM X (Stage 2)
-  - - [ ] Detect motion in X direction using camera (Stage 2.1)
-- - [ ] SLAM Y (Stage 3)
-- - [ ] Complete SLAM (Stage 4)
+- - [ ] Understanding and using an existing SLAM algorithm (Stage 2)
+  - - [x] Make a new environment (Stage 2.1)
+  - - [ ] Explore various existing algorithms (Stage 2.2)
+
 
 > Note: Addition/deletion of sub-stages is dependent on the complexity of implementation of a stage.
 
@@ -35,12 +35,14 @@ This repository contains two ROS packages:
 
 ![UAV - VIMAN](https://github.com/AuntyVIEW/viman/blob/master/viman_utility/multimedia/open_sky_1.jpg)
 
+> **IMPORTANT NOTE**: The `README.md` file of `master` branch gives an indepth explanation about the SLAM Z ROS nodes. Please refer to it in case of any descripancies until the Wiki page for the repository is ready.
+
 ## Implementation
 
 ### 0 | Control via keyboard
 Step 1: Execute the following command in terminal to launch the Gazebo world with *viman*.
 ```
-roslaunch viman_visualize gazebo-disp.launch on_rviz:=true
+roslaunch viman_visualize gazebo-disp.launch
 ```
 Step 2: Open another terminal and execute the following command to use keyboard keys to control the quadcopter.
 ```
@@ -50,41 +52,30 @@ Step 3: Play the simulation in Gazebo, place the focus of the terminal opened in
 
 ---
 ### 1 | SLAM Z
-#### 1.1 & 1.2 | Hover at a height with a set heading 
-Step 1: Execute the following command in terminal to launch the Gazebo world with *viman*.
+Execute the following command in terminal to launch the Gazebo world with *viman*.
 ```
-roslaunch viman_visualize gazebo-disp.launch on_rviz:=true
+roslaunch viman_visualize gazebo-disp.launch
 ```
-Step 2: Open another terminal and execute the following command to use keyboard keys to control the quadcopter.
+To use keyboard keys to control the quadcopter (surge, sway, heave, yaw)
 ```
 rosrun viman_control viman_sa
 ```
-Step 3: Play the simulation in Gazebo, place the focus of the terminal opened in step 2 and read the instructions provided by the ROS node.
-
-#### 1.3 | Map the features observed by VIMAN and store it into a file
-Step 1: Execute the following command in terminal to launch the Gazebo world with *viman*.
-```
-roslaunch viman_visualize gazebo-disp.launch nav:=1
-```
-Step 2: Open another terminal and then execute the following command
+To map the features observed by VIMAN and store it into a file (use `nav:=1` with `gazebo-disp.launch`)
 ```
 rosrun viman_control vm_z_linear_nav
 ```
-Follow the instructions preseted by the ROS node.
-
-#### 1 | Map the features observed by VIMAN and optimize the graph
-Perform step 1 from 1.3 and then execute the following command in another terminal.
+To map the features observed by VIMAN and optimize the graph (use `nav:=2` with `gazebo-disp.launch`)
 ```
 rosrun viman_control vm_z
 ```
 Follow the instructions preseted by the ROS node.
 
-#### Gazebo World
-The following is an image of the stack of cylinders that the UAV must map. The shown stack is used to complete stage 1.3.<br>
-![Linear-Z-World](https://github.com/AuntyVIEW/viman/blob/master/viman_utility/multimedia/linear_z_world.png)
-<br>
-The following GIF shows the partial cylinder stack (spawned via `nav:=2`. The environment shown is used for SLAM Z)<br>
-![motion-z-key](https://github.com/AuntyVIEW/viman/blob/master/viman_utility/multimedia/motion_z_keyboard.gif)
+---
+### 2 | Exploring existing SLAM algorithms
+### The new evironment:
+![env2_1](https://github.com/AuntyVIEW/viman/blob/master/viman_utility/multimedia/env2_1.jpg)
+![env2_2](https://github.com/AuntyVIEW/viman/blob/master/viman_utility/multimedia/env2_2.jpg)
+![env2_3](https://github.com/AuntyVIEW/viman/blob/master/viman_utility/multimedia/env2_3.jpg)
 
 ## Utility
 ### To see sensor data (IMU and altimeter)
@@ -103,27 +94,6 @@ rostopic echo /viman/color_id
 ```
 rosrun viman_control visualize_map
 ```
-Once the ROS node is run, it shows two plots:
-1. Unoptimized map
-2. Optimized map <br>
-![unoptimized](https://github.com/AuntyVIEW/viman/blob/master/viman_utility/multimedia/unoptimized.png)
-![optimized](https://github.com/AuntyVIEW/viman/blob/master/viman_utility/multimedia/optimized.png)
-
-
-### To find HSV color ranges for color thresholding
-Make use the following changes in `frnt_vision.py`
-```
-...
-from vision_process import DisplayImg, Output # For HSV thresholding
-...
-...
-...
-th_processing = DisplayImg() # For HSV thresholding
-...
-...
-```
-![Color-Thresholding](https://github.com/AuntyVIEW/viman/blob/master/viman_visualize/multimedia/thresholding.png)
-
 ### roslaunch parameters
 Note: Parameter values in **bold** correspond to default value.
 
@@ -133,6 +103,7 @@ Note: Parameter values in **bold** correspond to default value.
   - 0 - Empty world
   - 1 - Additional stacked cylinders for only z linear navigation
   - 2 - Parital cylinders stacked for SLAM Z navigation
+  - 3 - Environment 2
 
 ## Other VIMAN repositories
 1. [viman_vo][8] : Repo containing python code related to visual odometry.

@@ -1,0 +1,31 @@
+material env2_terrain/floor{
+	receive_shadows on
+	technique{
+		pass{
+			ambient 1.0 1.0 1.0 1.0
+   		    diffuse 0.8 0.8 0.8 1.0
+			specular 0.0 0.0 0.0 1.0 2.0
+			
+			texture_unit{
+				texture ../textures/red_ground.jpg
+				scale 0.5 0.5
+			}
+		}
+	}
+}
+
+material env2_terrain/wall{
+	receive_shadows on
+	technique{
+		pass{
+			ambient 1.0 1.0 1.0 1.0
+   		    diffuse 0.8 0.8 0.8 1.0
+			specular 0.0 0.0 0.0 1.0 2.0
+			
+			texture_unit{
+				texture ../textures/wall.jpg
+				scale 0.5 0.5
+			}
+		}
+	}
+}

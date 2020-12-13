@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot name="vmpad" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <link name="vmpad_base">
+    <inertial>
+      <origin
+        xyz="4.0487E-06 -1.0501 -2.4134E-05"
+        rpy="0 0 0" />
+      <mass
+        value="189.82" />
+      <inertia
+        ixx="104.26"
+        ixy="-1.8333E-05"
+        ixz="-1.4901E-05"
+        iyy="7.7413"
+        iyz="0.00010928"
+        izz="104.26" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://viman_visualize/meshes/vmpad_base.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://viman_visualize/meshes/vmpad_base.STL" />
+      </geometry>
+    </collision>
+  </link>
+
+  <gazebo reference="vmpad_base">
+	  <material>Gazebo/Grey</material>
+  </gazebo>
+  
+  <gazebo>
+	  <static>true</static>
+  </gazebo>
+
+
+</robot>

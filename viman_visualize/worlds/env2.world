@@ -9,6 +9,13 @@
     </physics>
     <scene>
       <ambient>0.8 0.8 0.8 1.0</ambient>
+     <!-- <fog>
+        <color>0.8 0.8 0.8</color>
+        <type>exp</type>
+        <density>0.1</density>
+        <linearStart>50.0</linearStart>
+        <linearEnd>515.0</linearEnd>
+      </fog> -->
       <sky>
         <clouds>
           <speed>12</speed>

@@ -73,9 +73,9 @@ Follow the instructions preseted by the ROS node.
 ---
 ### 2 | Exploring existing SLAM algorithms
 ### The new evironment:
-![env2_1](https://github.com/AuntyVIEW/viman/blob/master/viman_utility/multimedia/env2_1.jpg)
-![env2_2](https://github.com/AuntyVIEW/viman/blob/master/viman_utility/multimedia/env2_2.jpg)
-![env2_3](https://github.com/AuntyVIEW/viman/blob/master/viman_utility/multimedia/env2_3.jpg)
+![env2_1](https://github.com/AuntyVIEW/viman/blob/ver2/viman_utility/multimedia/env2_1.jpg)
+![env2_2](https://github.com/AuntyVIEW/viman/blob/ver2/viman_utility/multimedia/env2_2.jpg)
+![env2_3](https://github.com/AuntyVIEW/viman/blob/ver2/viman_utility/multimedia/env2_3.jpg)
 
 ## Utility
 ### To see sensor data (IMU and altimeter)

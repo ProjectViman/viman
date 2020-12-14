@@ -16,6 +16,7 @@ In order to incorporate autonomy into our UAV, the following milestones are to b
 - - [ ] Understanding and using an existing SLAM algorithm (Stage 2)
   - - [x] Make a new environment (Stage 2.1)
   - - [ ] Explore various existing algorithms (Stage 2.2)
+  - - [ ] Build/find an Android app to view Android camera output on ROS (Stage 2.3)
 
 
 > Note: Addition/deletion of sub-stages is dependent on the complexity of implementation of a stage.

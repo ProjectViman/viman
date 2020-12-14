@@ -15,7 +15,9 @@ SVO stands for Semi-direct Visual Odometry. The repository is maintained by Robo
 
 This algo satisfies requirements 1-2,5,6. For requirements 3-4, some additional work must be done.
 
-**Status**: Test implementation
+**Status**: Test implementation <br>
+**Updates**:
+- Dec 14, 2020: forked original repos and made minor changes so that the package works on melodic. It is working fine. Install the following packages instead of original ones: [rpg_svo][6] [rpg_vikit][7].
 
 ## References
 1. [awesome-visual-slam][2]
@@ -25,3 +27,5 @@ This algo satisfies requirements 1-2,5,6. For requirements 3-4, some additional 
 [3]:https://www.hardkernel.com/shop/odroid-u3/
 [4]:https://www.youtube.com/watch?v=2YnIMfw6bJY&feature=youtu.be
 [5]:https://www.hardkernel.com/shop/odroid-u3/
+[6]:https://github.com/meetm473/rpg_svo
+[7]:https://github.com/meetm473/rpg_vikit

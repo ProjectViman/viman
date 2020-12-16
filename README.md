@@ -1,5 +1,17 @@
 # VIMAN - VIrtual Manual and Autonomous Navigation
 
+## TODO {deadline: Dec 18, 2020}
+- [ ] Convert existing CV code that displays camera output and publishes it to the topic "/camera/*" from Python to C++.<br>
+**Reason**: The main pipeline of SVO is written in C++, and it will better if everything is in the same language.
+- [ ] Resolve the minor bugs in Gazebo simulation occurring due to introduction of helipad.
+- [ ] Add a downward looking camera to VIMAN.<br> **Reason**: SVO works only with downward looking cameras.
+- [ ] Clean the _ver2_ branch of _viman_ after making the aforementioned changes.
+- [ ] Add proper instructions to README file. 
+> All the instructions would be later shifted to WIki. Since we are in the development phase, let's mention everything in _.md_ files only.
+> To move VIMAN in _ver2_, please use only `viman_key_ctrl` node until TODO task 4 is finished.
+
+---
+
 With Project VIMAN, we aim to build a quadcopter capable of maneuvering in autonomous mode with the ability to detect people having high body temperature in a crowded area. This capability could be used to churn out potential CoVID-19 infected people from a crowd.
 
 In order to incorporate autonomy into our UAV, the following milestones are to be achieved:

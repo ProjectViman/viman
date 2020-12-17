@@ -1,8 +1,6 @@
 # VIMAN - VIrtual Manual and Autonomous Navigation
 
-## TODO {deadline: Dec 18, 2020}
-- [ ] Convert existing CV code that displays camera output and publishes it to the topic "/camera/*" from Python to C++.<br>
-**Reason**: The main pipeline of SVO is written in C++, and it will better if everything is in the same language.
+## TODO {deadline: Dec 20, 2020}
 - [ ] Resolve the minor bugs in Gazebo simulation occurring due to introduction of helipad.
 - [ ] Add a downward looking camera to VIMAN.<br> **Reason**: SVO works only with downward looking cameras.
 - [ ] Clean the _ver2_ branch of _viman_ after making the aforementioned changes.

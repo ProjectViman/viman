@@ -30,7 +30,12 @@ class img_calibrator:
 		self.bridge = CvBridge()
 		
 		# subscribing to ROS topic
-		self.image_sub = rospy.Subscriber("/viman/vm_frnt_cam/image",Image,self.callback)
+		u = int(input('Enter ur choice'))
+		if(u == 1):
+			self.image_sub = rospy.Subscriber("/viman/vm_frnt_cam/image",Image,self.callback)
+		else:
+			self.image_sub = rospy.Subscriber("/viman/vm_down_cam/image",Image,self.callback)
+		
 		self.img_w = img_w
 		self.img_h = img_h
 		
@@ -58,7 +63,7 @@ class img_calibrator:
 if __name__ == '__main__':
 	ic = img_calibrator(640,480)
 	th_processing = IdColor()
-	rospy.init_node('frnt_vision')
+	rospy.init_node('frnt_vision','dwn_vision')
 	
 	# Start vision processing in the background
 	th_processing.daemon = True

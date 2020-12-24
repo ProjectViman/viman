@@ -2,7 +2,7 @@
 
 ## TODO {deadline: Dec 20, 2020}
 - [ ] Resolve the minor bugs in Gazebo simulation occurring due to introduction of helipad.
-- [ ] Add a downward looking camera to VIMAN.<br> **Reason**: SVO works only with downward looking cameras.
+- [x] Add a downward looking camera to VIMAN.<br> **Reason**: SVO works only with downward looking cameras.
 - [ ] Clean the _ver2_ branch of _viman_ after making the aforementioned changes.
 - [ ] Add proper instructions to README file. 
 > All the instructions would be later shifted to WIki. Since we are in the development phase, let's mention everything in _.md_ files only.
@@ -94,9 +94,12 @@ Follow the instructions preseted by the ROS node.
 rosrun viman_control vm_sensor_data
 ```
 ### To view camera output (SLAM Z)
+There are two cams in viman: Front cam and Down Cam.
 ```
 rosrun viman_control z_vision.py
 ```
+For Front Cam | Enter 1 to ur choice
+For Down Cam | Enter 0 to ur choice
 ### To view the color identified by the camera (SLAM Z)
 ```
 rostopic echo /viman/color_id

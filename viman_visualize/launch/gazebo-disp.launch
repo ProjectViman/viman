@@ -34,19 +34,23 @@
 	<param name="robot_description" 
 		 command="$(find xacro)/xacro $(find viman_visualize)/urdf/$(arg model_name).xacro" />
 	
-	<node name="spawner" 
-			pkg="gazebo_ros"
-			type="spawn_model" 
-			respawn="false"
-			output="screen"
-			args="-urdf -model $(arg model_name) -param robot_description"
-		/>
+	
+	<group if = "$(eval arg('nav')==0)">
 	<node 
 		name="rviz" 
 		pkg="rviz" 
 		type="rviz" 
 		args="-d $(arg rvizconfig)"
 		if="$(arg on_rviz)"/>
+	
+	<node name="urdf_spawner" 
+			pkg="gazebo_ros"
+			type="spawn_model" 
+			respawn="false"
+			output="screen"
+			args="-urdf -model $(arg model_name) -param robot_description"
+		/>
+	</group>
 	
 	<group if = "$(eval arg('nav')==1)">
 		<param name="cy_stack_desc" 

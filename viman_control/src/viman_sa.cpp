@@ -32,7 +32,11 @@ void read_input(void){
 					  break;
 			
 			// Take off and Land
-			case 't': vm.toggle_ready();
+			case 't': calibrate(); //Calibration of height
+			          vm.toggle_ready();
+                      c++;
+			          std::cout << hr << std::endl ;	
+			          std::cout << c << std::endl ;			          
 					  isPidRunning = true;
 					  break; 
 			
@@ -148,6 +152,7 @@ int main(int argc, char **argv){
 	ros::Subscriber imu_subs_ = node.subscribe("/viman/imu",500,ImuCallbck);
 	
 	vm = Viman(node);
+	c = 0;          //Calibration control variable
 	height_controller_ = VmPidLinear();
 	yaw_controller_ = VmPidRotate();
 	
@@ -193,7 +198,7 @@ int main(int argc, char **argv){
 			
 			if(dt <= 0 ) continue;
 			
-			cmd_values[2] = height_controller_.update(set_points[2], position[2], 
+			cmd_values[2] = height_controller_.update(set_points[2], position[2]-hr, 
 									  dt);
 									  
 			cmd_values[3] = yaw_controller_.update(set_orient.yaw, cur_orient.yaw, dt);
@@ -208,9 +213,30 @@ int main(int argc, char **argv){
 		ros::spinOnce();
 	}
 }
-
+void calibrate(void){
+	std::cout << "Calibrating Height..." <<std::endl;
+	hr = 0.0;//Variable to store average z-height
+	//Take off case
+	if(c%2!=0){
+	for(int i = 0; i<100; i++)
+	{
+		hr+=h;
+	}
+	hr=hr/100.0;
+    }
+	//Landing
+	else{	                                    
+    for(int i = 0; i<100; i++)
+	{
+		hr+=h;
+	}
+	hr=hr/100.0;
+	position[2]+=hr;
+ }		
+}
 void HeightCallbck(const geometry_msgs::PointStamped& height_){
-	position[2] = height_.point.z;
+	h = height_.point.z;
+	position[2] = height_.point.z;	
 }
 
 void ImuCallbck(const sensor_msgs::Imu& imu_){

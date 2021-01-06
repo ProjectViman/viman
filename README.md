@@ -1,10 +1,10 @@
 # VIMAN - VIrtual Manual and Autonomous Navigation
 
-## TODO {deadline: Dec 20, 2020}
-- [ ] Resolve the minor bugs in Gazebo simulation occurring due to introduction of helipad.
+## TODO {deadline: Dec 20, 2020} - (Completed)
+- [x] Resolve the minor bugs in Gazebo simulation occurring due to introduction of helipad.
 - [x] Add a downward looking camera to VIMAN.<br> **Reason**: SVO works only with downward looking cameras.
-- [ ] Clean the _ver2_ branch of _viman_ after making the aforementioned changes.
-- [ ] Add proper instructions to README file. 
+- [x] Clean the _ver2_ branch of _viman_ after making the aforementioned changes.
+- [x] Add proper instructions to README file. 
 > All the instructions would be later shifted to WIki. Since we are in the development phase, let's mention everything in _.md_ files only.
 > To move VIMAN in _ver2_, please use only `viman_key_ctrl` node until TODO task 4 is finished.
 
@@ -68,6 +68,7 @@ Execute the following command in terminal to launch the Gazebo world with *viman
 roslaunch viman_visualize gazebo-disp.launch
 ```
 To use keyboard keys to control the quadcopter (surge, sway, heave, yaw)
+> **NOTE**: Viman can be now controlled semi-autonomuosly. It could reach a certain user defined heigth irrespective of takeoff platforms.
 ```
 rosrun viman_control viman_sa
 ```
@@ -98,8 +99,8 @@ There are two cams in viman: Front cam and Down Cam.
 ```
 rosrun viman_control z_vision.py
 ```
-For Front Cam | Enter 1 to ur choice
-For Down Cam | Enter 0 to ur choice
+- For Front Cam | Enter 1 to ur choice
+- For Down Cam | Enter 0 to ur choice
 ### To view the color identified by the camera (SLAM Z)
 ```
 rostopic echo /viman/color_id
